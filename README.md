@@ -17,11 +17,30 @@ Treat it as a foundation. The package structure pays off when you point it at ne
 ## Install
 
 ```bash
-git clone <repo>
+git clone https://github.com/LeSingh1/nba_shot_quality
 cd nba_shot_quality
 pip install -e .                  # for use
 pip install -e ".[test]"          # for development
 ```
+
+### macOS: XGBoost needs libomp
+
+XGBoost on macOS depends on `libomp.dylib`. The simplest fix:
+
+```bash
+brew install libomp
+```
+
+If you can't use Homebrew, sklearn already ships its own libomp. You can point
+XGBoost at it with one `install_name_tool` call:
+
+```bash
+SKLEARN_OMP=$(python -c "import sklearn, os; print(os.path.dirname(sklearn.__file__) + '/.dylibs')")
+XGB_DYLIB=$(python -c "import xgboost, os; print(os.path.dirname(xgboost.__file__) + '/lib/libxgboost.dylib')")
+install_name_tool -add_rpath "$SKLEARN_OMP" "$XGB_DYLIB"
+```
+
+On Linux, `libgomp.so` ships with most distros — no action needed.
 
 ## Run
 
@@ -65,9 +84,15 @@ In `models/`:
 ## Test
 
 ```bash
-pytest                            # all tests
-pytest --cov                      # with coverage (target 90% on nba_shot_quality/)
+pytest                            # all tests (90 passing on a libomp-enabled box)
+pytest --cov                      # with coverage (97% on the package)
 ```
+
+## Example output
+
+See [docs/example_run/](docs/example_run/) for the actual output of a run against
+the 2025-26 playoffs (mid-bracket). XGBoost beat the LogReg baseline by 0.0164
+log-loss with max decile calibration drift of 1.9%.
 
 ## License
 
