@@ -1,0 +1,34 @@
+# Data + models (never commit large or generated artifacts)
+# Leading slash anchors to the repo root so the source module
+# `nba_shot_quality/data/` is not excluded.
+/data/
+/models/
+/outputs/
+*.parquet
+*.joblib
+*.tmp
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+
+# Test + coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Jupyter
+.ipynb_checkpoints/
+notebooks/*.html
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
