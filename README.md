@@ -94,6 +94,36 @@ See [docs/example_run/](docs/example_run/) for the actual output of a run agains
 the 2025-26 playoffs (mid-bracket). XGBoost beat the LogReg baseline by 0.0164
 log-loss with max decile calibration drift of 1.9%.
 
+## Frontend — Nike-style product page
+
+A `Next.js 15` site that presents the model outputs as a high-end player-scouting boutique
+(modeled on the Nike Impact 4 launch page) instead of a data dashboard.
+
+```bash
+# After running the ML pipeline at least once, refresh exported JSON:
+cd frontend
+npm run export-data         # runs scripts/export_for_frontend.py against latest model
+npm install
+npm run dev                 # http://localhost:3000
+npm run build               # static export to frontend/out/
+```
+
+What's there:
+
+1. **Hero** — three-column Nike-style boutique: player name + animated xPPS odometer + scenario / shot-type pickers + ANALYZE CTA on the left; floating player headshot with massive outlined ghost typography of their last name in the center; half-moon carousel of 10 featured players on the right. Clicking a headshot springs the carousel into rotation and recolors every accent surface to that player's team primary in ~600ms via CSS custom properties.
+2. **Laboratory** — per-player SVG shot map. Blue dots = makes (intensity ∝ how surprising the make was), red dots = misses (intensity ∝ how good the look was). Hover tooltip with distance / xFG% / result.
+3. **Stress Test** — live shot probability simulator with circular gauge and plain-English "why" breakdown (mimics a SHAP waterfall). Sliders for distance, angle, defender distance, shot clock; gauge pulses red < 25%. Runs entirely in-browser via kNN over the actual shot data plus literature-derived adjustments for tracking features the model doesn't see.
+4. **Leaderboards** — sortable table over the empirical-Bayes-shrunk player ranking.
+5. **Methodology** — feature importance, calibration curve, per-fold metrics, and the written caveats.
+
+Featured players are real top-volume 2025-26 playoff scorers from the dataset: Edwards, Tatum, SGA, Brunson, Booker, Jokić, LeBron, Mitchell, Maxey, Cunningham. The 10 names are configured in `frontend/lib/featured.ts` — swap any ID that exists in `ranking.json`.
+
+### Honest about the frontend's limitations
+
+- The **live simulator does not call the trained XGBoost model.** The site is statically exported (no backend), so the simulator estimates xFG% by binning actual shots near the slider coordinates and applying additive heuristics for defender / shot-clock. The trained model is the source of truth for everything baked into `frontend/lib/data/` at export time.
+- Scenarios in the hero (Open C&S, Contested Pull-Up, Late-Clock Heave) are **location-based proxies** — the data has no defender distance or per-shot clock.
+- Player headshots use the public NBA CDN at `cdn.nba.com/headshots/nba/latest/1040x760/{id}.png` and are blended onto the dark hero via `mix-blend-mode: lighten`. Drop transparent cutouts into `frontend/public/players/` to upgrade.
+
 ## License
 
 MIT.
