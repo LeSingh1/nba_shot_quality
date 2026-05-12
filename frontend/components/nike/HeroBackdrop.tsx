@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 /**
  * 5-layered parallax backdrop for the hero. Each layer responds to mouse
@@ -196,6 +196,9 @@ function Particles({
 }: {
   xMotion: ReturnType<typeof useTransform<number, number>>;
 }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+
   const motes = useMemo(() => {
     // Seeded "random" — keeps SSR stable.
     const out: { left: number; size: number; delay: number; duration: number; opacity: number }[] = [];
@@ -213,6 +216,7 @@ function Particles({
     }
     return out;
   }, []);
+  if (!mounted) return null;
   return (
     <motion.div className="absolute inset-0" style={{ x: xMotion }}>
       {motes.map((m, i) => (
