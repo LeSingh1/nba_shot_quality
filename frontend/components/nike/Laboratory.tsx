@@ -39,7 +39,7 @@ export function Laboratory({ shots }: { shots: ShotsMap }) {
               style={{ fontFamily: "var(--font-display)", fontSize: "clamp(28px,3.5vw,48px)" }}
             >
               Shot map ·{" "}
-              <span style={{ color: player.primary }}>
+              <span style={{ color: player.secondary }}>
                 {player.firstName} {player.lastName}
               </span>
             </h2>

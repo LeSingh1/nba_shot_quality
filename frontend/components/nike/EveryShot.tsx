@@ -18,6 +18,23 @@ import { TrajectoryReplay } from "../court/TrajectoryReplay";
 
 const SHOTS_PER_GAME = 12;
 
+// 2025-26 playoff first round starts April 19. Games are spaced ~3 days apart.
+// Using Date arithmetic prevents month overflow (e.g. month 13 never appears).
+const PLAYOFF_START = new Date(2026, 3, 19); // month is 0-indexed: 3 = April
+
+function playoffDate(gameIndex: number): string {
+  const d = new Date(PLAYOFF_START);
+  d.setDate(d.getDate() + gameIndex * 3);
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return `${months[d.getMonth()]} ${d.getDate()}`;
+}
+
+// Playoff series home/away pattern: 2-2-1-1-1 (games 1,2,5 home; 3,4,6,7 away)
+const HOME_PATTERN = [true, true, false, false, true, false, true];
+function isHome(gameIndex: number): boolean {
+  return HOME_PATTERN[gameIndex % HOME_PATTERN.length] ?? true;
+}
+
 type ShotPoint = { x: number; y: number; made: 0 | 1; xfg: number };
 
 export function EveryShot({
@@ -42,14 +59,15 @@ export function EveryShot({
   const playerName = ranking.find((r) => r.player_id === playerId)?.player_name ?? "—";
   const allShots: ShotPoint[] = shots[String(playerId)]?.shots ?? [];
 
-  // Bucket shots into games. Each game gets a number and a derived stat line.
+  // Bucket shots into games. Each game gets a number, stat line, date, and home/away.
   const games = useMemo(() => {
-    const out: { idx: number; shots: ShotPoint[]; made: number; xfg: number }[] = [];
+    const out: { idx: number; shots: ShotPoint[]; made: number; xfg: number; date: string; home: boolean }[] = [];
     for (let i = 0; i < allShots.length; i += SHOTS_PER_GAME) {
       const slice = allShots.slice(i, i + SHOTS_PER_GAME);
       const made = slice.filter((s) => s.made === 1).length;
       const xfg = slice.reduce((a, s) => a + s.xfg, 0) / Math.max(1, slice.length);
-      out.push({ idx: out.length, shots: slice, made, xfg });
+      const idx = out.length;
+      out.push({ idx, shots: slice, made, xfg, date: playoffDate(idx), home: isHome(idx) });
     }
     return out;
   }, [allShots]);
@@ -110,12 +128,18 @@ export function EveryShot({
                 }}
                 primary="#FF2D6F"
               >
-                <span className="font-medium">Game {String(g.idx + 1).padStart(2, "0")}</span>
-                <span className="ml-2 flex gap-1.5 items-center text-[10px] uppercase tracking-wider font-mono">
-                  <span className="text-white/55">{g.made}/{g.shots.length}</span>
-                  <span className="text-white/30">·</span>
-                  <span className="text-white/55">{Math.round(g.xfg * 100)}xfg</span>
-                </span>
+                <div className="flex flex-col min-w-0">
+                  <span className="font-medium text-white/90">
+                    Gm {g.idx + 1} <span className="text-white/40 text-[9px]">{g.home ? "vs" : "@"}</span>
+                  </span>
+                  <span className="flex gap-1 items-center text-[9px] font-mono text-white/50 mt-0.5">
+                    <span>{g.made}–{g.shots.length} FG</span>
+                    <span className="text-white/25">·</span>
+                    <span>{Math.round(g.xfg * 100)}% xFG</span>
+                    <span className="text-white/25">·</span>
+                    <span>{g.date}</span>
+                  </span>
+                </div>
               </RailRow>
             ))}
           </Column>
