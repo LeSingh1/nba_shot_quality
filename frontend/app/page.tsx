@@ -12,6 +12,7 @@ import { StressTest } from "@/components/nike/StressTest";
 import { Leaderboards } from "@/components/nike/Leaderboards";
 import { Methodology } from "@/components/nike/Methodology";
 import { Reveal } from "@/components/nike/Reveal";
+import { WatchShot } from "@/components/watch/WatchShot";
 
 export default function Page() {
   const data = getAppData();
@@ -22,6 +23,9 @@ export default function Page() {
       <PlayerHero shots={data.shots} ranking={data.ranking} meta={data.meta} />
       <Reveal><WhereTheyShot shots={data.shots} /></Reveal>
       <Reveal><EveryShot shots={data.shots} ranking={data.ranking} /></Reveal>
+      <div id="watch-a-shot">
+        <Reveal><WatchShot shots={data.shots} /></Reveal>
+      </div>
       <Reveal><Laboratory shots={data.shots} /></Reveal>
       <Reveal><StressTest shots={data.shots} ranking={data.ranking} /></Reveal>
       <Reveal><Leaderboards ranking={data.ranking} /></Reveal>

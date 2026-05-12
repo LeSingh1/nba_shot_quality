@@ -13,6 +13,8 @@ import {
 import { SKELETON, type Keypoint } from "./pose-types";
 import { GaugeAngle } from "./GaugeAngle";
 import { MetricCard } from "./MetricCard";
+import { ShotDetailCard } from "./ShotDetailCard";
+import { WATCH_CLIPS, pickRandomClip, type WatchClip } from "@/lib/watchClips";
 
 /**
  * Live shot-tracking demo.
@@ -46,17 +48,28 @@ export function WatchShot({ shots }: { shots: ShotsMap }) {
   const [defaultMissing, setDefaultMissing] = useState(false);
   const [running, setRunning] = useState(false);
   const [locked, setLocked] = useState<LockedMetrics | null>(null);
+  // The current clip drives the detail card under the video. Null when the
+  // user has uploaded their own file (no curated metadata to show).
+  const [currentClip, setCurrentClip] = useState<WatchClip | null>(WATCH_CLIPS[0] ?? null);
 
-  // Probe the default clip on mount. If it exists, use it; otherwise fall
-  // through to an upload-required state.
+  // Probe the default clip on mount. If it exists locally, use it. Otherwise
+  // fall back to the first curated playoff clip so the page always has video.
   useEffect(() => {
     const candidate = "/clips/default-shot.mp4";
     fetch(candidate, { method: "HEAD" })
       .then((r) => {
-        if (r.ok) setVideoSrc(candidate);
-        else setDefaultMissing(true);
+        if (r.ok) {
+          setVideoSrc(candidate);
+        } else if (WATCH_CLIPS[0]) {
+          setVideoSrc(WATCH_CLIPS[0].url);
+        } else {
+          setDefaultMissing(true);
+        }
       })
-      .catch(() => setDefaultMissing(true));
+      .catch(() => {
+        if (WATCH_CLIPS[0]) setVideoSrc(WATCH_CLIPS[0].url);
+        else setDefaultMissing(true);
+      });
   }, []);
 
   const onUpload = useCallback((file: File) => {
@@ -64,9 +77,20 @@ export function WatchShot({ shots }: { shots: ShotsMap }) {
     setVideoSrc(url);
     setDefaultMissing(false);
     setLocked(null);
+    setCurrentClip(null);
     detectorRef.current.reset();
     resetBall();
   }, [resetBall]);
+
+  const onShuffleClip = useCallback(() => {
+    const next = pickRandomClip(currentClip?.id);
+    setCurrentClip(next);
+    setVideoSrc(next.url);
+    setLocked(null);
+    setDefaultMissing(false);
+    detectorRef.current.reset();
+    resetBall();
+  }, [currentClip, resetBall]);
 
   /** The per-frame loop. MoveNet + HSV ball tracking + canvas overlay paint. */
   const loop = useCallback(async () => {
@@ -262,6 +286,13 @@ export function WatchShot({ shots }: { shots: ShotsMap }) {
                 <span>HSV ball tracking · EMA α=0.55</span>
               </div>
             </div>
+
+            {/* Detail card — what the model saw */}
+            {currentClip && (
+              <div className="mt-6">
+                <ShotDetailCard clip={currentClip} onShuffle={onShuffleClip} />
+              </div>
+            )}
           </div>
 
           {/* RIGHT — 5 metric cards */}

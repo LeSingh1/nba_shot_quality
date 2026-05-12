@@ -21,7 +21,7 @@ export function NikeTopbar() {
         <Link href="/#hero"             className="hover:text-white text-white/70">Home</Link>
         <Link href="/#where-they-shot"  className="hover:text-white text-white/70">Shot Map</Link>
         <Link href="/#every-shot"       className="hover:text-white text-white/70">Replay</Link>
-        <Link href="/watch"             className="hover:text-white text-white/70">Watch a Shot</Link>
+        <Link href="/#watch-a-shot"     className="hover:text-white text-white/70">Watch a Shot</Link>
         <Link href="/#leaderboards"     className="hover:text-white text-white/70">Leaderboards</Link>
         <Link href="/#methodology"      className="hover:text-white text-white/70">Methodology</Link>
       </nav>
