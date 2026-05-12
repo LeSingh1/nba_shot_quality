@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { FEATURED } from "@/lib/featured";
 import { SCENARIOS, type Scenario, filterScenario, computeMetrics } from "@/lib/scenarios";
 import type { ShotsMap } from "@/lib/types";
-import { ShotMap } from "../court/ShotMap";
+import { Court3DPlayer } from "../court/Court3DPlayer";
 
 /**
  * Section 4 — "The Laboratory". A focused shot map for any featured player,
@@ -121,7 +121,7 @@ export function Laboratory({ shots }: { shots: ShotsMap }) {
 
           {/* Shot map */}
           <div className="col-span-12 md:col-span-9">
-            <ShotMap shots={filtered} accent={player.primary} mode={colorMode} tilted />
+            <Court3DPlayer shots={filtered} mode={colorMode} />
           </div>
         </div>
       </div>
