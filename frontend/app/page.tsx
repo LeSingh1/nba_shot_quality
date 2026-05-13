@@ -6,11 +6,7 @@ import { getAppData } from "@/lib/data";
 import { NikeTopbar } from "@/components/nike/Topbar";
 import { PlayerHero } from "@/components/nike/PlayerHero";
 import { WhereTheyShot } from "@/components/nike/WhereTheyShot";
-import { EveryShot } from "@/components/nike/EveryShot";
 import { HeavySections } from "@/components/nike/HeavySections";
-import { StressTest } from "@/components/nike/StressTest";
-import { Leaderboards } from "@/components/nike/Leaderboards";
-import { Methodology } from "@/components/nike/Methodology";
 import { Reveal } from "@/components/nike/Reveal";
 
 export default function Page() {
@@ -21,11 +17,13 @@ export default function Page() {
       <NikeTopbar />
       <PlayerHero shots={data.shots} ranking={data.ranking} meta={data.meta} />
       <Reveal><WhereTheyShot shots={data.shots} /></Reveal>
-      <Reveal><EveryShot shots={data.shots} ranking={data.ranking} /></Reveal>
-      <HeavySections shots={data.shots} />
-      <Reveal><StressTest shots={data.shots} ranking={data.ranking} /></Reveal>
-      <Reveal><Leaderboards ranking={data.ranking} /></Reveal>
-      <Reveal><Methodology meta={data.meta} fold={data.fold_metrics} calibration={data.calibration} /></Reveal>
+      <HeavySections
+        shots={data.shots}
+        ranking={data.ranking}
+        meta={data.meta}
+        fold={data.fold_metrics}
+        calibration={data.calibration}
+      />
 
       <footer className="bg-black text-white/40 text-xs py-8 px-8 md:px-16 border-t border-white/10">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between gap-3">
