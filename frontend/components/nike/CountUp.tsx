@@ -15,8 +15,11 @@ export function CountUp({
   duration?: number;
   decimals?: number;
 }) {
-  const [display, setDisplay] = useState(value);
-  const prev = useRef(value);
+  // Start at 0 so the very first mount animates UP to the target value.
+  // On subsequent value changes, prev holds the last terminal value so the
+  // animation ramps from the current display to the new target naturally.
+  const [display, setDisplay] = useState(0);
+  const prev = useRef(0);
   const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
