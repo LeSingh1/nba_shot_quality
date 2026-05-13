@@ -245,7 +245,15 @@ export function WatchShot({ shots }: { shots: ShotsMap }) {
               <div className="relative w-full aspect-video bg-black">
                 {hasVideo ? (
                   <>
+                    {/*
+                     * Keyed on videoSrc so the element remounts when the URL
+                     * changes (shuffle / upload). Without the key, setting
+                     * `src` alone is unreliable — most browsers won't pick up
+                     * the new source unless you also call video.load(), and
+                     * autoPlay only fires once per mount.
+                     */}
                     <video
+                      key={videoSrc}
                       ref={videoRef}
                       src={videoSrc!}
                       className="absolute inset-0 w-full h-full object-contain"
