@@ -28,6 +28,16 @@ export type WatchClipMetrics = {
   timeToReleaseMs: number;
 };
 
+/**
+ * Shot location in NBA shot-chart coordinates: origin at hoop, +x = right,
+ * +y = away from baseline, units = tenths of a foot. Lets the mini court
+ * diagram plot the shot dot in the right spot for each clip.
+ */
+export type WatchClipShotLocation = {
+  x: number;
+  y: number;
+};
+
 export type WatchClip = {
   id: string;
   /** Streaming URL for the <video> tag. */
@@ -45,6 +55,8 @@ export type WatchClip = {
   /** Curated metric values used when live tracking can't run (tainted canvas). */
   metrics: WatchClipMetrics;
   inputs: WatchClipInputs;
+  /** Where on the half-court the shot was taken (for the mini diagram). */
+  shotLocation: WatchClipShotLocation;
   /** True if the host serves CORS headers; gates pose detection. */
   cors: boolean;
 };
@@ -70,6 +82,8 @@ export const WATCH_CLIPS: readonly WatchClip[] = [
       how: "Pull-up 3PT off the bounce",
       situation: "Away · ~4 ft of space · trailing by 2",
     },
+    // 26 ft straight on, top of the key
+    shotLocation: { x: -20, y: 260 },
     cors: false,
   },
   {
@@ -92,6 +106,8 @@ export const WATCH_CLIPS: readonly WatchClip[] = [
       how: "Drive-and-finish · assisted",
       situation: "Away · clean lane · leading by 8",
     },
+    // 4 ft, slight left of the rim
+    shotLocation: { x: -12, y: 38 },
     cors: false,
   },
   {
@@ -114,6 +130,8 @@ export const WATCH_CLIPS: readonly WatchClip[] = [
       how: "Catch and shoot · off pin-down",
       situation: "Home · ~5 ft of space · trailing by 8",
     },
+    // 24 ft right wing — angle ~40° from baseline, sin*240≈154, cos*240≈184
+    shotLocation: { x: 154, y: 184 },
     cors: false,
   },
 ];

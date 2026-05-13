@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import type { WatchClip } from "@/lib/watchClips";
+import { WatchMiniCourt } from "./WatchMiniCourt";
 
 type Props = {
   clip: WatchClip;
@@ -11,39 +12,45 @@ type Props = {
 const EASE = [0.16, 1, 0.3, 1] as const;
 
 /**
- * Editorial detail slab for the current clip.
+ * Detail "scout card" for the current clip.
  *
- *   Top strip:   result chip · series tag · shuffle button
- *   Headline:    player name (oversized), action subtitle
- *   Inputs:      four annotated chips with mini icons (Where / How / When /
- *                Situation) reading as a single line of scout copy, not a
- *                label-value grid
- *   Verdict:     one-line takeaway integrating the model's xFG read
+ * Two-column composition:
+ *   LEFT  — half-court diagram with the shot location plotted as a glowing
+ *           dot. Makes the card read as a designed object, not a labeled grid.
+ *   RIGHT — top strip (result + series + shuffle), oversized player name,
+ *           shot-type subtitle, a clean 4-row spec sheet of the model inputs,
+ *           and a single integrated verdict line.
  *
- * The right-rail ReleaseProfile owns the headline xFG number, so this card
- * stays focused on context and copy. Motion: stagger the input chips on a
- * 35ms cadence per ui-ux-pro-max §7 stagger-sequence.
+ * The right-rail ReleaseProfile still owns the headline xFG number, so this
+ * card stays focused on context and copy.
  */
 export function ShotDetailCard({ clip, onShuffle }: Props) {
   const reduce = useReducedMotion();
 
   const tone = clip.made
     ? {
-        chipBorder: "rgba(52,211,153,0.5)",
-        chipBg: "rgba(52,211,153,0.08)",
+        chipBorder: "rgba(52,211,153,0.55)",
+        chipBg: "rgba(52,211,153,0.10)",
         chipFg: "#34D399",
-        verdict: "#34D399",
+        accent: "#34D399",
         verb: "drained it",
       }
     : {
         chipBorder: "color-mix(in srgb, var(--nike-accent) 55%, transparent)",
         chipBg: "color-mix(in srgb, var(--nike-accent) 10%, transparent)",
         chipFg: "var(--nike-accent)",
-        verdict: "var(--nike-accent)",
+        accent: "var(--nike-accent)",
         verb: "rimmed out",
       };
 
   const pct = Math.round(clip.modelXfg * 100);
+
+  const specs: Spec[] = [
+    { label: "Where", value: clip.inputs.where },
+    { label: "How", value: clip.inputs.how },
+    { label: "When", value: clip.inputs.when },
+    { label: "Spacing", value: clip.inputs.situation },
+  ];
 
   return (
     <AnimatePresence mode="wait">
@@ -52,36 +59,89 @@ export function ShotDetailCard({ clip, onShuffle }: Props) {
         initial={reduce ? { opacity: 0 } : { opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         exit={reduce ? { opacity: 0 } : { opacity: 0, y: -8 }}
-        transition={{ duration: 0.42, ease: EASE }}
+        transition={{ duration: 0.45, ease: EASE }}
         className="
           relative overflow-hidden rounded-2xl
-          border border-white/8
-          bg-gradient-to-b from-white/[0.04] to-white/[0.01]
+          border border-white/10
+          bg-[linear-gradient(180deg,rgba(255,255,255,0.045)_0%,rgba(255,255,255,0.01)_100%)]
         "
       >
-        {/* Accent rail — colored thread on the left tying the card to the
-            make/miss verdict without a heavy border. */}
-        <span
+        {/* Background art — soft accent wash bleeding from the bottom-left
+            corner toward the center. Adds depth without distracting copy. */}
+        <div
           aria-hidden
-          className="absolute left-0 top-6 bottom-6 w-[2px] rounded-r"
-          style={{ background: tone.chipFg, opacity: 0.55 }}
+          className="absolute -bottom-32 -left-32 w-[420px] h-[420px] rounded-full pointer-events-none"
+          style={{
+            background: `radial-gradient(circle, ${tone.accent}1f 0%, transparent 65%)`,
+            filter: "blur(40px)",
+          }}
         />
 
-        <div className="px-6 md:px-8 py-7">
-          {/* Top strip */}
-          <div className="flex items-center gap-3 flex-wrap">
-            <ResultChip made={clip.made} tone={tone} />
-            <SeriesLabel series={clip.series} />
-            <ShuffleButton onClick={onShuffle} />
+        {/* Accent rail */}
+        <span
+          aria-hidden
+          className="absolute left-0 top-7 bottom-7 w-[2px] rounded-r"
+          style={{ background: tone.accent, opacity: 0.6 }}
+        />
+
+        <div className="relative grid grid-cols-1 md:grid-cols-[260px_1fr] gap-6 md:gap-10 p-6 md:p-8">
+          {/* LEFT — court diagram */}
+          <div className="flex flex-col gap-4">
+            <div className="text-[10px] uppercase tracking-[0.28em] font-mono text-white/40">
+              Shot map
+            </div>
+            <motion.div
+              initial={reduce ? false : { opacity: 0, scale: 0.97 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.55, delay: 0.08, ease: EASE }}
+              className="
+                rounded-xl border border-white/8
+                bg-black/30 backdrop-blur-sm
+                p-4
+              "
+            >
+              <WatchMiniCourt
+                x={clip.shotLocation.x}
+                y={clip.shotLocation.y}
+                made={clip.made}
+                tone={tone.accent}
+              />
+            </motion.div>
+
+            {/* Floor stats under the diagram */}
+            <motion.dl
+              initial={reduce ? false : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.25, ease: EASE }}
+              className="flex items-baseline justify-between px-1"
+            >
+              <FloorStat
+                label="Distance"
+                value={`${Math.round(Math.hypot(clip.shotLocation.x, clip.shotLocation.y) / 10)} ft`}
+              />
+              <FloorStat
+                label="Angle"
+                value={`${Math.abs(Math.round((Math.atan2(clip.shotLocation.x, clip.shotLocation.y) * 180) / Math.PI))}°`}
+              />
+              <FloorStat label="Result" value={clip.made ? "Make" : "Miss"} valueColor={tone.accent} />
+            </motion.dl>
           </div>
 
-          {/* Headline */}
-          <div className="mt-6 grid grid-cols-1 md:grid-cols-[1fr_auto] md:items-end gap-4 md:gap-8">
+          {/* RIGHT — content */}
+          <div className="flex flex-col">
+            {/* Top strip */}
+            <div className="flex items-center gap-3 flex-wrap">
+              <ResultChip made={clip.made} tone={tone} />
+              <SeriesLabel series={clip.series} />
+              <ShuffleButton onClick={onShuffle} />
+            </div>
+
+            {/* Headline */}
             <motion.h3
               initial={reduce ? false : { opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55, delay: 0.08, ease: EASE }}
-              className="font-black leading-[0.92] tracking-[-0.025em] text-white"
+              transition={{ duration: 0.55, delay: 0.1, ease: EASE }}
+              className="mt-5 font-black leading-[0.92] tracking-[-0.025em] text-white"
               style={{
                 fontFamily: "var(--font-display)",
                 fontSize: "clamp(34px, 4vw, 56px)",
@@ -93,77 +153,75 @@ export function ShotDetailCard({ clip, onShuffle }: Props) {
               initial={reduce ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.18, ease: EASE }}
-              className="text-right md:pb-2"
+              className="mt-2 text-white/55 text-[14px]"
             >
-              <div className="text-[10px] uppercase tracking-[0.24em] font-mono text-white/40">
-                Shot type
-              </div>
-              <div className="text-white/85 text-[15px] font-medium mt-1 tabular-nums">
-                {clip.action}
-              </div>
+              {clip.action}
             </motion.div>
-          </div>
 
-          {/* What the model saw — inline chips, not a 2-col list */}
-          <div className="mt-7">
+            {/* Spec sheet */}
+            <div className="mt-6 border-t border-white/8">
+              <div className="text-[10px] uppercase tracking-[0.28em] font-mono text-white/40 pt-4 mb-1">
+                What the model saw
+              </div>
+              <ul className="divide-y divide-white/[0.06]">
+                {specs.map((spec, i) => (
+                  <SpecRow
+                    key={spec.label}
+                    spec={spec}
+                    delay={reduce ? 0 : 0.22 + i * 0.06}
+                  />
+                ))}
+              </ul>
+            </div>
+
+            {/* Verdict */}
             <motion.div
-              initial={reduce ? false : { opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.4, delay: 0.22, ease: EASE }}
-              className="text-[10px] uppercase tracking-[0.28em] font-mono text-white/40 mb-3.5"
+              initial={reduce ? false : { opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, delay: 0.55, ease: EASE }}
+              className="mt-6 pt-5 border-t border-white/8"
             >
-              What the model saw
+              <div className="flex items-baseline justify-between gap-4 mb-3">
+                <span className="text-[10px] uppercase tracking-[0.28em] font-mono text-white/45">
+                  Model verdict
+                </span>
+                <span className="text-[10px] uppercase tracking-[0.18em] font-mono text-white/45 tabular-nums">
+                  xFG · {pct}%
+                </span>
+              </div>
+              {/* Probability bar */}
+              <div className="relative h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
+                <motion.div
+                  initial={reduce ? { width: `${pct}%` } : { width: 0 }}
+                  animate={{ width: `${pct}%` }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 60,
+                    damping: 18,
+                    delay: 0.65,
+                  }}
+                  className="absolute inset-y-0 left-0 rounded-full"
+                  style={{
+                    background: tone.accent,
+                    boxShadow: `0 0 12px ${tone.accent}88`,
+                  }}
+                />
+              </div>
+              <p className="mt-3 text-[14px] leading-[1.55] text-white/75">
+                Expected to fall{" "}
+                <span
+                  className="font-bold tabular-nums"
+                  style={{ color: tone.accent }}
+                >
+                  {pct}%
+                </span>{" "}
+                of the time ·{" "}
+                <span style={{ color: tone.accent }} className="font-semibold">
+                  {clip.player.split(" ").pop()} {tone.verb}.
+                </span>
+              </p>
             </motion.div>
-
-            <ul className="flex flex-wrap gap-2">
-              <InputChip
-                icon={IconPin}
-                label="Where"
-                value={clip.inputs.where}
-                delay={0.26}
-              />
-              <InputChip
-                icon={IconCrosshair}
-                label="How"
-                value={clip.inputs.how}
-                delay={0.32}
-              />
-              <InputChip
-                icon={IconClock}
-                label="When"
-                value={clip.inputs.when}
-                delay={0.38}
-              />
-              <InputChip
-                icon={IconShield}
-                label="Situation"
-                value={clip.inputs.situation}
-                delay={0.44}
-              />
-            </ul>
           </div>
-
-          {/* Verdict line */}
-          <motion.div
-            initial={reduce ? false : { opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.55, delay: 0.5, ease: EASE }}
-            className="mt-7 pt-5 border-t border-white/8"
-          >
-            <p className="text-[15px] leading-[1.55] text-white/80">
-              Model gave it{" "}
-              <span
-                className="font-bold tabular-nums"
-                style={{ color: tone.verdict }}
-              >
-                {pct}%
-              </span>{" "}
-              before release ·{" "}
-              <span style={{ color: tone.verdict }} className="font-semibold">
-                {clip.player.split(" ").pop()} {tone.verb}.
-              </span>
-            </p>
-          </motion.div>
         </div>
       </motion.article>
     </AnimatePresence>
@@ -172,13 +230,62 @@ export function ShotDetailCard({ clip, onShuffle }: Props) {
 
 /* ───────────────────────────────────────────────────────── presenters */
 
-function ResultChip({
-  made,
-  tone,
+type Spec = { label: string; value: string };
+
+type Tone = {
+  chipBorder: string;
+  chipBg: string;
+  chipFg: string;
+  accent: string;
+  verb: string;
+};
+
+function SpecRow({ spec, delay }: { spec: Spec; delay: number }) {
+  const reduce = useReducedMotion();
+  return (
+    <motion.li
+      initial={reduce ? false : { opacity: 0, x: 6 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.45, delay, ease: EASE }}
+      className="group flex items-baseline gap-6 py-3 px-1 hover:bg-white/[0.02] transition-colors -mx-1 rounded"
+    >
+      <dt className="w-[92px] shrink-0 text-[10px] uppercase tracking-[0.22em] font-mono text-white/45 group-hover:text-white/65 transition-colors">
+        {spec.label}
+      </dt>
+      <dd className="text-[14px] text-white/90 leading-snug">{spec.value}</dd>
+    </motion.li>
+  );
+}
+
+function FloorStat({
+  label,
+  value,
+  valueColor,
 }: {
-  made: boolean;
-  tone: { chipBorder: string; chipBg: string; chipFg: string };
+  label: string;
+  value: string;
+  valueColor?: string;
 }) {
+  return (
+    <div className="flex flex-col">
+      <dt className="text-[9px] uppercase tracking-[0.22em] font-mono text-white/40">
+        {label}
+      </dt>
+      <dd
+        className="text-[16px] font-bold tabular-nums mt-0.5"
+        style={{
+          color: valueColor ?? "#fff",
+          fontFamily: "var(--font-display)",
+          letterSpacing: "-0.01em",
+        }}
+      >
+        {value}
+      </dd>
+    </div>
+  );
+}
+
+function ResultChip({ made, tone }: { made: boolean; tone: Tone }) {
   return (
     <motion.span
       initial={{ opacity: 0, scale: 0.94 }}
@@ -241,121 +348,5 @@ function ShuffleButton({ onClick }: { onClick: () => void }) {
       </motion.svg>
       Shuffle clip
     </motion.button>
-  );
-}
-
-function InputChip({
-  icon: Icon,
-  label,
-  value,
-  delay,
-}: {
-  icon: (props: { className?: string }) => React.ReactNode;
-  label: string;
-  value: string;
-  delay: number;
-}) {
-  const reduce = useReducedMotion();
-  return (
-    <motion.li
-      initial={reduce ? false : { opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45, delay, ease: EASE }}
-      whileHover={reduce ? undefined : { y: -1 }}
-      className="
-        group inline-flex items-center gap-2.5
-        rounded-lg
-        border border-white/10
-        bg-white/[0.025] hover:bg-white/[0.05]
-        px-3 py-2
-        transition-colors
-      "
-    >
-      <span className="text-white/45 group-hover:text-white/70 transition-colors">
-        <Icon className="w-3.5 h-3.5" />
-      </span>
-      <span className="flex items-baseline gap-2 min-w-0">
-        <span className="text-[9px] uppercase tracking-[0.22em] font-mono text-white/40 shrink-0">
-          {label}
-        </span>
-        <span className="text-[13px] text-white/90 truncate">{value}</span>
-      </span>
-    </motion.li>
-  );
-}
-
-/* ───────────────────────────────────────────────── inline icons (lucide) */
-
-function IconPin({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      aria-hidden
-    >
-      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z" />
-      <circle cx="12" cy="10" r="3" />
-    </svg>
-  );
-}
-
-function IconCrosshair({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      aria-hidden
-    >
-      <circle cx="12" cy="12" r="9" />
-      <line x1="22" y1="12" x2="18" y2="12" />
-      <line x1="6" y1="12" x2="2" y2="12" />
-      <line x1="12" y1="6" x2="12" y2="2" />
-      <line x1="12" y1="22" x2="12" y2="18" />
-    </svg>
-  );
-}
-
-function IconClock({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      aria-hidden
-    >
-      <circle cx="12" cy="12" r="9" />
-      <polyline points="12 7 12 12 15 14" />
-    </svg>
-  );
-}
-
-function IconShield({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      aria-hidden
-    >
-      <path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z" />
-    </svg>
   );
 }
