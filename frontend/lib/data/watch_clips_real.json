@@ -1,0 +1,1217 @@
+[
+  {
+    "id": "0042500101-13",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/19/0042500101/13/13b0f724-f604-c30a-5395-a30b3f8f28ee_1280x720.mp4",
+    "series": "2026 R1 \u00b7 ORL @ DET \u00b7 Apr 19",
+    "player": "J. Suggs",
+    "action": "25' Jump Shot",
+    "made": true,
+    "modelXfg": 0.3748,
+    "grade": "C",
+    "metrics": {
+      "releaseAngleDeg": 48,
+      "releaseHeightFt": 9.4,
+      "bodyLeanDeg": 3,
+      "timeToReleaseMs": 410
+    },
+    "inputs": {
+      "where": "25 ft \u00b7 Above the Break 3",
+      "when": "Q1 \u00b7 11:19",
+      "how": "Jump Shot",
+      "situation": "Away vs DET"
+    },
+    "shotLocation": {
+      "x": -179,
+      "y": 177
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500101-18",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/19/0042500101/18/c960cd2f-233e-4e02-3da9-33b3c5577d60_1280x720.mp4",
+    "series": "2026 R1 \u00b7 ORL @ DET \u00b7 Apr 19",
+    "player": "D. Robinson",
+    "action": "25' Jump Shot",
+    "made": true,
+    "modelXfg": 0.3895,
+    "grade": "C",
+    "metrics": {
+      "releaseAngleDeg": 48,
+      "releaseHeightFt": 9.4,
+      "bodyLeanDeg": 3,
+      "timeToReleaseMs": 410
+    },
+    "inputs": {
+      "where": "25 ft \u00b7 Above the Break 3",
+      "when": "Q1 \u00b7 10:55",
+      "how": "Jump Shot",
+      "situation": "Home vs ORL"
+    },
+    "shotLocation": {
+      "x": 140,
+      "y": 216
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500101-376",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/19/0042500101/376/9fb57128-a66a-3a7e-6cba-07a16f48c3b2_1280x720.mp4",
+    "series": "2026 R1 \u00b7 ORL @ DET \u00b7 Apr 19",
+    "player": "W. Jr.",
+    "action": "8' Floating Jump shot",
+    "made": true,
+    "modelXfg": 0.5322,
+    "grade": "B",
+    "metrics": {
+      "releaseAngleDeg": 52,
+      "releaseHeightFt": 9.1,
+      "bodyLeanDeg": 7,
+      "timeToReleaseMs": 480
+    },
+    "inputs": {
+      "where": "8 ft \u00b7 In The Paint (Non-RA)",
+      "when": "Q3 \u00b7 11:46",
+      "how": "Floating Jump shot",
+      "situation": "Away vs DET"
+    },
+    "shotLocation": {
+      "x": 72,
+      "y": 49
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500102-54",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/22/0042500102/54/34145f0b-6ee6-1b36-edd3-707b438dac74_1280x720.mp4",
+    "series": "2026 R1 \u00b7 ORL @ DET \u00b7 Apr 22",
+    "player": "A. Thompson",
+    "action": "1' Reverse Layup Shot",
+    "made": true,
+    "modelXfg": 0.5708,
+    "grade": "A",
+    "metrics": {
+      "releaseAngleDeg": 38,
+      "releaseHeightFt": 9.8,
+      "bodyLeanDeg": 8,
+      "timeToReleaseMs": 290
+    },
+    "inputs": {
+      "where": "1 ft \u00b7 Restricted Area",
+      "when": "Q1 \u00b7 08:35",
+      "how": "Reverse Layup Shot",
+      "situation": "Home vs ORL"
+    },
+    "shotLocation": {
+      "x": 11,
+      "y": -4
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500102-221",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/22/0042500102/221/3dc3109a-a7b9-b1c3-a056-bd4bc48c8668_1280x720.mp4",
+    "series": "2026 R1 \u00b7 ORL @ DET \u00b7 Apr 22",
+    "player": "J. Duren",
+    "action": "7' Driving Floating Jump Shot",
+    "made": false,
+    "modelXfg": 0.6053,
+    "grade": "A",
+    "metrics": {
+      "releaseAngleDeg": 52,
+      "releaseHeightFt": 9.1,
+      "bodyLeanDeg": 7,
+      "timeToReleaseMs": 480
+    },
+    "inputs": {
+      "where": "7 ft \u00b7 In The Paint (Non-RA)",
+      "when": "Q2 \u00b7 09:34",
+      "how": "Driving Floating Jump Shot",
+      "situation": "Home vs ORL"
+    },
+    "shotLocation": {
+      "x": -2,
+      "y": 74
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500102-450",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/22/0042500102/450/8631f607-b28d-7c66-8ff4-c499f41a1635_1280x720.mp4",
+    "series": "2026 R1 \u00b7 ORL @ DET \u00b7 Apr 22",
+    "player": "A. Thompson",
+    "action": "2' Driving Dunk Shot",
+    "made": true,
+    "modelXfg": 0.6608,
+    "grade": "A+",
+    "metrics": {
+      "releaseAngleDeg": 38,
+      "releaseHeightFt": 9.8,
+      "bodyLeanDeg": 8,
+      "timeToReleaseMs": 290
+    },
+    "inputs": {
+      "where": "2 ft \u00b7 Restricted Area",
+      "when": "Q3 \u00b7 06:16",
+      "how": "Driving Dunk Shot",
+      "situation": "Home vs ORL"
+    },
+    "shotLocation": {
+      "x": -2,
+      "y": 25
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500103-7",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/25/0042500103/7/b1571725-6098-1d56-0e8d-260d1815fb0c_1280x720.mp4",
+    "series": "2026 R1 \u00b7 DET @ ORL \u00b7 Apr 25",
+    "player": "D. Bane",
+    "action": "1' Driving Reverse Layup Shot",
+    "made": true,
+    "modelXfg": 0.6702,
+    "grade": "A+",
+    "metrics": {
+      "releaseAngleDeg": 38,
+      "releaseHeightFt": 9.8,
+      "bodyLeanDeg": 8,
+      "timeToReleaseMs": 290
+    },
+    "inputs": {
+      "where": "1 ft \u00b7 Restricted Area",
+      "when": "Q1 \u00b7 11:43",
+      "how": "Driving Reverse Layup Shot",
+      "situation": "Home vs DET"
+    },
+    "shotLocation": {
+      "x": 1,
+      "y": 11
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500103-17",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/25/0042500103/17/253e4125-ccbd-a79b-5238-bc99d3876eb9_1280x720.mp4",
+    "series": "2026 R1 \u00b7 DET @ ORL \u00b7 Apr 25",
+    "player": "W. Jr.",
+    "action": "2' Putback Dunk Shot",
+    "made": true,
+    "modelXfg": 0.6092,
+    "grade": "A",
+    "metrics": {
+      "releaseAngleDeg": 38,
+      "releaseHeightFt": 9.8,
+      "bodyLeanDeg": 8,
+      "timeToReleaseMs": 290
+    },
+    "inputs": {
+      "where": "2 ft \u00b7 Restricted Area",
+      "when": "Q1 \u00b7 10:45",
+      "how": "Putback Dunk Shot",
+      "situation": "Home vs DET"
+    },
+    "shotLocation": {
+      "x": -22,
+      "y": 19
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500103-60",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/25/0042500103/60/06d68331-5adb-c46c-5226-b10683c4a123_1280x720.mp4",
+    "series": "2026 R1 \u00b7 DET @ ORL \u00b7 Apr 25",
+    "player": "A. Black",
+    "action": "1' Alley Oop Layup shot",
+    "made": false,
+    "modelXfg": 0.6759,
+    "grade": "A+",
+    "metrics": {
+      "releaseAngleDeg": 38,
+      "releaseHeightFt": 9.8,
+      "bodyLeanDeg": 8,
+      "timeToReleaseMs": 290
+    },
+    "inputs": {
+      "where": "1 ft \u00b7 Restricted Area",
+      "when": "Q1 \u00b7 06:36",
+      "how": "Alley Oop Layup shot",
+      "situation": "Home vs DET"
+    },
+    "shotLocation": {
+      "x": 0,
+      "y": 10
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500103-62",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/25/0042500103/62/5e2dcef1-02d3-820c-9ea4-817dd5b71e14_1280x720.mp4",
+    "series": "2026 R1 \u00b7 DET @ ORL \u00b7 Apr 25",
+    "player": "J. Duren",
+    "action": "1' Running Alley Oop Dunk Shot",
+    "made": true,
+    "modelXfg": 0.6621,
+    "grade": "A+",
+    "metrics": {
+      "releaseAngleDeg": 38,
+      "releaseHeightFt": 9.8,
+      "bodyLeanDeg": 8,
+      "timeToReleaseMs": 290
+    },
+    "inputs": {
+      "where": "1 ft \u00b7 Restricted Area",
+      "when": "Q1 \u00b7 06:31",
+      "how": "Running Alley Oop Dunk Shot",
+      "situation": "Away vs ORL"
+    },
+    "shotLocation": {
+      "x": 4,
+      "y": 18
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500103-66",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/25/0042500103/66/61daa83c-fa9f-8100-a30a-f96f01f6d13b_1280x720.mp4",
+    "series": "2026 R1 \u00b7 DET @ ORL \u00b7 Apr 25",
+    "player": "A. Thompson",
+    "action": "1' Layup Shot",
+    "made": true,
+    "modelXfg": 0.6049,
+    "grade": "A",
+    "metrics": {
+      "releaseAngleDeg": 38,
+      "releaseHeightFt": 9.8,
+      "bodyLeanDeg": 8,
+      "timeToReleaseMs": 290
+    },
+    "inputs": {
+      "where": "1 ft \u00b7 Restricted Area",
+      "when": "Q1 \u00b7 06:24",
+      "how": "Layup Shot",
+      "situation": "Away vs ORL"
+    },
+    "shotLocation": {
+      "x": -11,
+      "y": 11
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500103-78",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/25/0042500103/78/16c37952-6b30-5c00-8ddc-75cc9cca6c49_1280x720.mp4",
+    "series": "2026 R1 \u00b7 DET @ ORL \u00b7 Apr 25",
+    "player": "J. Duren",
+    "action": "1' Alley Oop Dunk Shot",
+    "made": true,
+    "modelXfg": 0.603,
+    "grade": "A",
+    "metrics": {
+      "releaseAngleDeg": 38,
+      "releaseHeightFt": 9.8,
+      "bodyLeanDeg": 8,
+      "timeToReleaseMs": 290
+    },
+    "inputs": {
+      "where": "1 ft \u00b7 Restricted Area",
+      "when": "Q1 \u00b7 05:44",
+      "how": "Alley Oop Dunk Shot",
+      "situation": "Away vs ORL"
+    },
+    "shotLocation": {
+      "x": -12,
+      "y": 6
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500103-82",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/25/0042500103/82/8877b059-8131-ada1-bfc0-f68d59e07409_1280x720.mp4",
+    "series": "2026 R1 \u00b7 DET @ ORL \u00b7 Apr 25",
+    "player": "A. Thompson",
+    "action": "1' Running Alley Oop Dunk Shot",
+    "made": true,
+    "modelXfg": 0.5896,
+    "grade": "A",
+    "metrics": {
+      "releaseAngleDeg": 38,
+      "releaseHeightFt": 9.8,
+      "bodyLeanDeg": 8,
+      "timeToReleaseMs": 290
+    },
+    "inputs": {
+      "where": "1 ft \u00b7 Restricted Area",
+      "when": "Q1 \u00b7 05:27",
+      "how": "Running Alley Oop Dunk Shot",
+      "situation": "Away vs ORL"
+    },
+    "shotLocation": {
+      "x": -18,
+      "y": 5
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500103-93",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/25/0042500103/93/31428ada-3d1c-2607-8188-f1099585be66_1280x720.mp4",
+    "series": "2026 R1 \u00b7 DET @ ORL \u00b7 Apr 25",
+    "player": "T. Silva",
+    "action": "2' Hook Shot",
+    "made": false,
+    "modelXfg": 0.6079,
+    "grade": "A",
+    "metrics": {
+      "releaseAngleDeg": 46,
+      "releaseHeightFt": 9.3,
+      "bodyLeanDeg": 4,
+      "timeToReleaseMs": 430
+    },
+    "inputs": {
+      "where": "2 ft \u00b7 Restricted Area",
+      "when": "Q1 \u00b7 04:29",
+      "how": "Hook Shot",
+      "situation": "Home vs DET"
+    },
+    "shotLocation": {
+      "x": -15,
+      "y": 19
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500103-161",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/25/0042500103/161/385d3cd1-3a85-4422-a0d0-57421fc421c8_1280x720.mp4",
+    "series": "2026 R1 \u00b7 DET @ ORL \u00b7 Apr 25",
+    "player": "G. Bitadze",
+    "action": "2' Alley Oop Dunk Shot",
+    "made": true,
+    "modelXfg": 0.6221,
+    "grade": "A",
+    "metrics": {
+      "releaseAngleDeg": 38,
+      "releaseHeightFt": 9.8,
+      "bodyLeanDeg": 8,
+      "timeToReleaseMs": 290
+    },
+    "inputs": {
+      "where": "2 ft \u00b7 Restricted Area",
+      "when": "Q1 \u00b7 00:48",
+      "how": "Alley Oop Dunk Shot",
+      "situation": "Home vs DET"
+    },
+    "shotLocation": {
+      "x": 15,
+      "y": 19
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500103-171",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/25/0042500103/171/40b530d2-8794-38f4-7754-600544011c14_1280x720.mp4",
+    "series": "2026 R1 \u00b7 DET @ ORL \u00b7 Apr 25",
+    "player": "F. Wagner",
+    "action": "2' Driving Finger Roll Layup Shot",
+    "made": false,
+    "modelXfg": 0.6427,
+    "grade": "A",
+    "metrics": {
+      "releaseAngleDeg": 38,
+      "releaseHeightFt": 9.8,
+      "bodyLeanDeg": 8,
+      "timeToReleaseMs": 290
+    },
+    "inputs": {
+      "where": "2 ft \u00b7 Restricted Area",
+      "when": "Q1 \u00b7 00:05",
+      "how": "Driving Finger Roll Layup Shot",
+      "situation": "Home vs DET"
+    },
+    "shotLocation": {
+      "x": 9,
+      "y": 24
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500103-204",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/25/0042500103/204/4d83397a-5420-04df-290a-e6b426cfecf3_1280x720.mp4",
+    "series": "2026 R1 \u00b7 DET @ ORL \u00b7 Apr 25",
+    "player": "K. Huerter",
+    "action": "18' Pullup Jump shot",
+    "made": false,
+    "modelXfg": 0.4458,
+    "grade": "C",
+    "metrics": {
+      "releaseAngleDeg": 46,
+      "releaseHeightFt": 9.3,
+      "bodyLeanDeg": 4,
+      "timeToReleaseMs": 430
+    },
+    "inputs": {
+      "where": "18 ft \u00b7 Mid-Range",
+      "when": "Q2 \u00b7 10:32",
+      "how": "Pullup Jump shot",
+      "situation": "Away vs ORL"
+    },
+    "shotLocation": {
+      "x": 129,
+      "y": 136
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500103-209",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/25/0042500103/209/0567bc87-2205-421b-736f-3fb020af6753_1280x720.mp4",
+    "series": "2026 R1 \u00b7 DET @ ORL \u00b7 Apr 25",
+    "player": "J. Green",
+    "action": "27' Running Jump Shot",
+    "made": false,
+    "modelXfg": 0.3452,
+    "grade": "D",
+    "metrics": {
+      "releaseAngleDeg": 48,
+      "releaseHeightFt": 9.4,
+      "bodyLeanDeg": 3,
+      "timeToReleaseMs": 410
+    },
+    "inputs": {
+      "where": "27 ft \u00b7 Above the Break 3",
+      "when": "Q2 \u00b7 10:14",
+      "how": "Running Jump Shot",
+      "situation": "Away vs ORL"
+    },
+    "shotLocation": {
+      "x": -191,
+      "y": 202
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500103-217",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/25/0042500103/217/fa9756ba-032e-42c5-d72d-adaf2a552f5b_1280x720.mp4",
+    "series": "2026 R1 \u00b7 DET @ ORL \u00b7 Apr 25",
+    "player": "T. Harris",
+    "action": "0' Cutting Layup Shot",
+    "made": true,
+    "modelXfg": 0.6593,
+    "grade": "A+",
+    "metrics": {
+      "releaseAngleDeg": 38,
+      "releaseHeightFt": 9.8,
+      "bodyLeanDeg": 8,
+      "timeToReleaseMs": 290
+    },
+    "inputs": {
+      "where": "0 ft \u00b7 Restricted Area",
+      "when": "Q2 \u00b7 09:35",
+      "how": "Cutting Layup Shot",
+      "situation": "Away vs ORL"
+    },
+    "shotLocation": {
+      "x": 0,
+      "y": 4
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500103-225",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/25/0042500103/225/f0e2aa84-e6da-46c6-f7e7-624a4c16dd8e_1280x720.mp4",
+    "series": "2026 R1 \u00b7 DET @ ORL \u00b7 Apr 25",
+    "player": "J. Duren",
+    "action": "7' Turnaround Jump Shot",
+    "made": false,
+    "modelXfg": 0.5147,
+    "grade": "B",
+    "metrics": {
+      "releaseAngleDeg": 52,
+      "releaseHeightFt": 9.1,
+      "bodyLeanDeg": 7,
+      "timeToReleaseMs": 480
+    },
+    "inputs": {
+      "where": "7 ft \u00b7 In The Paint (Non-RA)",
+      "when": "Q2 \u00b7 08:50",
+      "how": "Turnaround Jump Shot",
+      "situation": "Away vs ORL"
+    },
+    "shotLocation": {
+      "x": 71,
+      "y": 8
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500103-292",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/25/0042500103/292/c2bdba3b-2bbb-4809-dc35-b03b780f6ef1_1280x720.mp4",
+    "series": "2026 R1 \u00b7 DET @ ORL \u00b7 Apr 25",
+    "player": "A. Thompson",
+    "action": "0' Tip Dunk Shot",
+    "made": true,
+    "modelXfg": 0.6857,
+    "grade": "A+",
+    "metrics": {
+      "releaseAngleDeg": 38,
+      "releaseHeightFt": 9.8,
+      "bodyLeanDeg": 8,
+      "timeToReleaseMs": 290
+    },
+    "inputs": {
+      "where": "0 ft \u00b7 Restricted Area",
+      "when": "Q2 \u00b7 04:56",
+      "how": "Tip Dunk Shot",
+      "situation": "Away vs ORL"
+    },
+    "shotLocation": {
+      "x": 0,
+      "y": 0
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500103-420",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/25/0042500103/420/2cd1c088-132b-cd05-054c-b3d8e819592e_1280x720.mp4",
+    "series": "2026 R1 \u00b7 DET @ ORL \u00b7 Apr 25",
+    "player": "D. Bane",
+    "action": "22' Step Back Bank Jump Shot",
+    "made": true,
+    "modelXfg": 0.3436,
+    "grade": "D",
+    "metrics": {
+      "releaseAngleDeg": 48,
+      "releaseHeightFt": 9.4,
+      "bodyLeanDeg": 3,
+      "timeToReleaseMs": 410
+    },
+    "inputs": {
+      "where": "22 ft \u00b7 Right Corner 3",
+      "when": "Q3 \u00b7 08:32",
+      "how": "Step Back Bank Jump Shot",
+      "situation": "Home vs DET"
+    },
+    "shotLocation": {
+      "x": 225,
+      "y": 10
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500103-442",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/25/0042500103/442/0e350a7a-0f0e-ab08-ae8d-a391a9cca318_1280x720.mp4",
+    "series": "2026 R1 \u00b7 DET @ ORL \u00b7 Apr 25",
+    "player": "T. Harris",
+    "action": "1' Dunk Shot",
+    "made": true,
+    "modelXfg": 0.6038,
+    "grade": "A",
+    "metrics": {
+      "releaseAngleDeg": 38,
+      "releaseHeightFt": 9.8,
+      "bodyLeanDeg": 8,
+      "timeToReleaseMs": 290
+    },
+    "inputs": {
+      "where": "1 ft \u00b7 Restricted Area",
+      "when": "Q3 \u00b7 07:19",
+      "how": "Dunk Shot",
+      "situation": "Away vs ORL"
+    },
+    "shotLocation": {
+      "x": -9,
+      "y": 14
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500103-503",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/25/0042500103/503/7ea73de8-1fee-ad67-a834-5f7e49f7ce35_1280x720.mp4",
+    "series": "2026 R1 \u00b7 DET @ ORL \u00b7 Apr 25",
+    "player": "G. Bitadze",
+    "action": "2' Turnaround Hook Shot",
+    "made": false,
+    "modelXfg": 0.5975,
+    "grade": "A",
+    "metrics": {
+      "releaseAngleDeg": 52,
+      "releaseHeightFt": 9.1,
+      "bodyLeanDeg": 7,
+      "timeToReleaseMs": 480
+    },
+    "inputs": {
+      "where": "2 ft \u00b7 Restricted Area",
+      "when": "Q3 \u00b7 04:07",
+      "how": "Turnaround Hook Shot",
+      "situation": "Home vs DET"
+    },
+    "shotLocation": {
+      "x": 20,
+      "y": 12
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500103-509",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/25/0042500103/509/059ed43f-e8b5-862e-7781-2ca248e3b071_1280x720.mp4",
+    "series": "2026 R1 \u00b7 DET @ ORL \u00b7 Apr 25",
+    "player": "J. Suggs",
+    "action": "2' Putback Layup Shot",
+    "made": false,
+    "modelXfg": 0.582,
+    "grade": "A",
+    "metrics": {
+      "releaseAngleDeg": 38,
+      "releaseHeightFt": 9.8,
+      "bodyLeanDeg": 8,
+      "timeToReleaseMs": 290
+    },
+    "inputs": {
+      "where": "2 ft \u00b7 Restricted Area",
+      "when": "Q3 \u00b7 03:30",
+      "how": "Putback Layup Shot",
+      "situation": "Home vs DET"
+    },
+    "shotLocation": {
+      "x": -18,
+      "y": 15
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500103-587",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/25/0042500103/587/bb6359ce-5cd9-aae0-60cf-051f8a0fad6d_1280x720.mp4",
+    "series": "2026 R1 \u00b7 DET @ ORL \u00b7 Apr 25",
+    "player": "I. Stewart",
+    "action": "2' Alley Oop Layup shot",
+    "made": false,
+    "modelXfg": 0.5731,
+    "grade": "A",
+    "metrics": {
+      "releaseAngleDeg": 38,
+      "releaseHeightFt": 9.8,
+      "bodyLeanDeg": 8,
+      "timeToReleaseMs": 290
+    },
+    "inputs": {
+      "where": "2 ft \u00b7 Restricted Area",
+      "when": "Q4 \u00b7 10:48",
+      "how": "Alley Oop Layup shot",
+      "situation": "Away vs ORL"
+    },
+    "shotLocation": {
+      "x": -26,
+      "y": 5
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500103-606",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/25/0042500103/606/e5ba5998-e743-791a-8dbd-89e68e5554a7_1280x720.mp4",
+    "series": "2026 R1 \u00b7 DET @ ORL \u00b7 Apr 25",
+    "player": "J. Duren",
+    "action": "5' Turnaround Bank shot",
+    "made": false,
+    "modelXfg": 0.6035,
+    "grade": "A",
+    "metrics": {
+      "releaseAngleDeg": 52,
+      "releaseHeightFt": 9.1,
+      "bodyLeanDeg": 7,
+      "timeToReleaseMs": 480
+    },
+    "inputs": {
+      "where": "5 ft \u00b7 In The Paint (Non-RA)",
+      "when": "Q4 \u00b7 09:41",
+      "how": "Turnaround Bank shot",
+      "situation": "Away vs ORL"
+    },
+    "shotLocation": {
+      "x": 26,
+      "y": 51
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500103-619",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/25/0042500103/619/902e4826-35b9-c7fe-1c55-8f2fba3b80da_1280x720.mp4",
+    "series": "2026 R1 \u00b7 DET @ ORL \u00b7 Apr 25",
+    "player": "J. Cain",
+    "action": "6' Driving Floating Jump Shot",
+    "made": false,
+    "modelXfg": 0.6115,
+    "grade": "A",
+    "metrics": {
+      "releaseAngleDeg": 52,
+      "releaseHeightFt": 9.1,
+      "bodyLeanDeg": 7,
+      "timeToReleaseMs": 480
+    },
+    "inputs": {
+      "where": "6 ft \u00b7 In The Paint (Non-RA)",
+      "when": "Q4 \u00b7 08:43",
+      "how": "Driving Floating Jump Shot",
+      "situation": "Home vs DET"
+    },
+    "shotLocation": {
+      "x": -6,
+      "y": 65
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500103-622",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/25/0042500103/622/fec9640f-b529-2650-2759-dc59660a59da_1280x720.mp4",
+    "series": "2026 R1 \u00b7 DET @ ORL \u00b7 Apr 25",
+    "player": "A. Thompson",
+    "action": "2' Driving Reverse Layup Shot",
+    "made": true,
+    "modelXfg": 0.6373,
+    "grade": "A",
+    "metrics": {
+      "releaseAngleDeg": 38,
+      "releaseHeightFt": 9.8,
+      "bodyLeanDeg": 8,
+      "timeToReleaseMs": 290
+    },
+    "inputs": {
+      "where": "2 ft \u00b7 Restricted Area",
+      "when": "Q4 \u00b7 08:25",
+      "how": "Driving Reverse Layup Shot",
+      "situation": "Away vs ORL"
+    },
+    "shotLocation": {
+      "x": 9,
+      "y": 19
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500103-648",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/25/0042500103/648/834b54de-919c-2c00-ca8f-ccc80e5a6c03_1280x720.mp4",
+    "series": "2026 R1 \u00b7 DET @ ORL \u00b7 Apr 25",
+    "player": "J. Duren",
+    "action": "0' Tip Dunk Shot",
+    "made": true,
+    "modelXfg": 0.6857,
+    "grade": "A+",
+    "metrics": {
+      "releaseAngleDeg": 38,
+      "releaseHeightFt": 9.8,
+      "bodyLeanDeg": 8,
+      "timeToReleaseMs": 290
+    },
+    "inputs": {
+      "where": "0 ft \u00b7 Restricted Area",
+      "when": "Q4 \u00b7 06:18",
+      "how": "Tip Dunk Shot",
+      "situation": "Away vs ORL"
+    },
+    "shotLocation": {
+      "x": 0,
+      "y": 0
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500103-704",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/25/0042500103/704/9fcf3efd-c122-a7ba-c3a2-84e7a778c8ed_1280x720.mp4",
+    "series": "2026 R1 \u00b7 DET @ ORL \u00b7 Apr 25",
+    "player": "F. Wagner",
+    "action": "15' Step Back Jump shot",
+    "made": true,
+    "modelXfg": 0.5019,
+    "grade": "B",
+    "metrics": {
+      "releaseAngleDeg": 46,
+      "releaseHeightFt": 9.3,
+      "bodyLeanDeg": 4,
+      "timeToReleaseMs": 430
+    },
+    "inputs": {
+      "where": "15 ft \u00b7 Mid-Range",
+      "when": "Q4 \u00b7 02:30",
+      "how": "Step Back Jump shot",
+      "situation": "Home vs DET"
+    },
+    "shotLocation": {
+      "x": 96,
+      "y": 125
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500104-84",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/27/0042500104/84/d0355bcf-a67f-57cc-ff80-ed9647994421_1280x720.mp4",
+    "series": "2026 R1 \u00b7 DET @ ORL \u00b7 Apr 27",
+    "player": "J. Duren",
+    "action": "11' Jump Shot",
+    "made": true,
+    "modelXfg": 0.5017,
+    "grade": "B",
+    "metrics": {
+      "releaseAngleDeg": 46,
+      "releaseHeightFt": 9.3,
+      "bodyLeanDeg": 4,
+      "timeToReleaseMs": 430
+    },
+    "inputs": {
+      "where": "11 ft \u00b7 Mid-Range",
+      "when": "Q1 \u00b7 05:48",
+      "how": "Jump Shot",
+      "situation": "Away vs ORL"
+    },
+    "shotLocation": {
+      "x": 102,
+      "y": 42
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500104-177",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/27/0042500104/177/2bc5546e-1c35-05a1-9681-a9dd20103cf8_1280x720.mp4",
+    "series": "2026 R1 \u00b7 DET @ ORL \u00b7 Apr 27",
+    "player": "G. Bitadze",
+    "action": "3' Cutting Layup Shot",
+    "made": true,
+    "modelXfg": 0.5815,
+    "grade": "A",
+    "metrics": {
+      "releaseAngleDeg": 38,
+      "releaseHeightFt": 9.8,
+      "bodyLeanDeg": 8,
+      "timeToReleaseMs": 290
+    },
+    "inputs": {
+      "where": "3 ft \u00b7 Restricted Area",
+      "when": "Q1 \u00b7 00:03",
+      "how": "Cutting Layup Shot",
+      "situation": "Home vs DET"
+    },
+    "shotLocation": {
+      "x": 22,
+      "y": 27
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500104-284",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/27/0042500104/284/2ad6de4c-6684-7403-c12b-0eeb3e6c65c2_1280x720.mp4",
+    "series": "2026 R1 \u00b7 DET @ ORL \u00b7 Apr 27",
+    "player": "W. Jr.",
+    "action": "0' Tip Layup Shot",
+    "made": true,
+    "modelXfg": 0.6857,
+    "grade": "A+",
+    "metrics": {
+      "releaseAngleDeg": 38,
+      "releaseHeightFt": 9.8,
+      "bodyLeanDeg": 8,
+      "timeToReleaseMs": 290
+    },
+    "inputs": {
+      "where": "0 ft \u00b7 Restricted Area",
+      "when": "Q2 \u00b7 06:26",
+      "how": "Tip Layup Shot",
+      "situation": "Home vs DET"
+    },
+    "shotLocation": {
+      "x": 0,
+      "y": 0
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500104-625",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/27/0042500104/625/088213c0-f493-0a0f-5146-9675f179700c_1280x720.mp4",
+    "series": "2026 R1 \u00b7 DET @ ORL \u00b7 Apr 27",
+    "player": "J. Cain",
+    "action": "2' Driving Dunk Shot",
+    "made": true,
+    "modelXfg": 0.6538,
+    "grade": "A+",
+    "metrics": {
+      "releaseAngleDeg": 38,
+      "releaseHeightFt": 9.8,
+      "bodyLeanDeg": 8,
+      "timeToReleaseMs": 290
+    },
+    "inputs": {
+      "where": "2 ft \u00b7 Restricted Area",
+      "when": "Q4 \u00b7 08:34",
+      "how": "Driving Dunk Shot",
+      "situation": "Home vs DET"
+    },
+    "shotLocation": {
+      "x": 4,
+      "y": 21
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500104-678",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/27/0042500104/678/dca92241-b3e5-101d-2885-5f43ecbd058d_1280x720.mp4",
+    "series": "2026 R1 \u00b7 DET @ ORL \u00b7 Apr 27",
+    "player": "J. Cain",
+    "action": "0' Tip Dunk Shot",
+    "made": true,
+    "modelXfg": 0.6857,
+    "grade": "A+",
+    "metrics": {
+      "releaseAngleDeg": 38,
+      "releaseHeightFt": 9.8,
+      "bodyLeanDeg": 8,
+      "timeToReleaseMs": 290
+    },
+    "inputs": {
+      "where": "0 ft \u00b7 Restricted Area",
+      "when": "Q4 \u00b7 04:55",
+      "how": "Tip Dunk Shot",
+      "situation": "Home vs DET"
+    },
+    "shotLocation": {
+      "x": 0,
+      "y": 0
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500105-139",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/29/0042500105/139/a9f11224-c82d-dd80-acf0-f52df2e9c964_1280x720.mp4",
+    "series": "2026 R1 \u00b7 ORL @ DET \u00b7 Apr 29",
+    "player": "C. LeVert",
+    "action": "3' Running Dunk Shot",
+    "made": true,
+    "modelXfg": 0.5633,
+    "grade": "A",
+    "metrics": {
+      "releaseAngleDeg": 38,
+      "releaseHeightFt": 9.8,
+      "bodyLeanDeg": 8,
+      "timeToReleaseMs": 290
+    },
+    "inputs": {
+      "where": "3 ft \u00b7 Restricted Area",
+      "when": "Q1 \u00b7 02:57",
+      "how": "Running Dunk Shot",
+      "situation": "Home vs ORL"
+    },
+    "shotLocation": {
+      "x": 38,
+      "y": 8
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500105-162",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/29/0042500105/162/4f491f22-45dd-b2e9-c1a5-8088f3223f02_1280x720.mp4",
+    "series": "2026 R1 \u00b7 ORL @ DET \u00b7 Apr 29",
+    "player": "T. Silva",
+    "action": "0' Tip Layup Shot",
+    "made": true,
+    "modelXfg": 0.6857,
+    "grade": "A+",
+    "metrics": {
+      "releaseAngleDeg": 38,
+      "releaseHeightFt": 9.8,
+      "bodyLeanDeg": 8,
+      "timeToReleaseMs": 290
+    },
+    "inputs": {
+      "where": "0 ft \u00b7 Restricted Area",
+      "when": "Q1 \u00b7 01:09",
+      "how": "Tip Layup Shot",
+      "situation": "Away vs DET"
+    },
+    "shotLocation": {
+      "x": 0,
+      "y": 0
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500105-168",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/29/0042500105/168/604de385-e3cf-2328-ac69-5dbc5a06930c_1280x720.mp4",
+    "series": "2026 R1 \u00b7 ORL @ DET \u00b7 Apr 29",
+    "player": "T. Silva",
+    "action": "11' Turnaround Fadeaway shot",
+    "made": false,
+    "modelXfg": 0.5506,
+    "grade": "A",
+    "metrics": {
+      "releaseAngleDeg": 52,
+      "releaseHeightFt": 9.1,
+      "bodyLeanDeg": 7,
+      "timeToReleaseMs": 480
+    },
+    "inputs": {
+      "where": "11 ft \u00b7 In The Paint (Non-RA)",
+      "when": "Q1 \u00b7 00:28",
+      "how": "Turnaround Fadeaway shot",
+      "situation": "Away vs DET"
+    },
+    "shotLocation": {
+      "x": 32,
+      "y": 109
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500105-304",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/29/0042500105/304/468be154-0a19-ac68-5bfa-d6c95f5f3590_1280x720.mp4",
+    "series": "2026 R1 \u00b7 ORL @ DET \u00b7 Apr 29",
+    "player": "J. Duren",
+    "action": "18' Pullup Jump shot",
+    "made": false,
+    "modelXfg": 0.4339,
+    "grade": "C",
+    "metrics": {
+      "releaseAngleDeg": 46,
+      "releaseHeightFt": 9.3,
+      "bodyLeanDeg": 4,
+      "timeToReleaseMs": 430
+    },
+    "inputs": {
+      "where": "18 ft \u00b7 Mid-Range",
+      "when": "Q2 \u00b7 02:52",
+      "how": "Pullup Jump shot",
+      "situation": "Home vs ORL"
+    },
+    "shotLocation": {
+      "x": -151,
+      "y": 113
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500105-346",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/29/0042500105/346/5d0c61a4-bf20-edfd-c63b-419a14ac0b33_1280x720.mp4",
+    "series": "2026 R1 \u00b7 ORL @ DET \u00b7 Apr 29",
+    "player": "A. Black",
+    "action": "29' Running Pull-Up Jump Shot",
+    "made": true,
+    "modelXfg": 0.3305,
+    "grade": "D",
+    "metrics": {
+      "releaseAngleDeg": 48,
+      "releaseHeightFt": 9.4,
+      "bodyLeanDeg": 3,
+      "timeToReleaseMs": 410
+    },
+    "inputs": {
+      "where": "29 ft \u00b7 Above the Break 3",
+      "when": "Q2 \u00b7 00:42",
+      "how": "Running Pull-Up Jump Shot",
+      "situation": "Away vs DET"
+    },
+    "shotLocation": {
+      "x": 175,
+      "y": 239
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500105-349",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/29/0042500105/349/32d11a33-139b-3fce-6826-01bd1b1e90e8_1280x720.mp4",
+    "series": "2026 R1 \u00b7 ORL @ DET \u00b7 Apr 29",
+    "player": "A. Black",
+    "action": "28' Running Jump Shot",
+    "made": false,
+    "modelXfg": 0.3744,
+    "grade": "C",
+    "metrics": {
+      "releaseAngleDeg": 48,
+      "releaseHeightFt": 9.4,
+      "bodyLeanDeg": 3,
+      "timeToReleaseMs": 410
+    },
+    "inputs": {
+      "where": "28 ft \u00b7 Above the Break 3",
+      "when": "Q2 \u00b7 00:22",
+      "how": "Running Jump Shot",
+      "situation": "Away vs DET"
+    },
+    "shotLocation": {
+      "x": 45,
+      "y": 281
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500105-492",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/29/0042500105/492/cb97e3ea-7560-5e86-7966-e5513c117277_1280x720.mp4",
+    "series": "2026 R1 \u00b7 ORL @ DET \u00b7 Apr 29",
+    "player": "P. Banchero",
+    "action": "7' Turnaround Hook Shot",
+    "made": false,
+    "modelXfg": 0.5836,
+    "grade": "A",
+    "metrics": {
+      "releaseAngleDeg": 52,
+      "releaseHeightFt": 9.1,
+      "bodyLeanDeg": 7,
+      "timeToReleaseMs": 480
+    },
+    "inputs": {
+      "where": "7 ft \u00b7 In The Paint (Non-RA)",
+      "when": "Q3 \u00b7 03:02",
+      "how": "Turnaround Hook Shot",
+      "situation": "Away vs DET"
+    },
+    "shotLocation": {
+      "x": 32,
+      "y": 67
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500105-513",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/29/0042500105/513/7c7ef07d-a28c-c4ae-af0c-f29edc7d1003_1280x720.mp4",
+    "series": "2026 R1 \u00b7 ORL @ DET \u00b7 Apr 29",
+    "player": "T. Silva",
+    "action": "27' Running Jump Shot",
+    "made": false,
+    "modelXfg": 0.3374,
+    "grade": "D",
+    "metrics": {
+      "releaseAngleDeg": 48,
+      "releaseHeightFt": 9.4,
+      "bodyLeanDeg": 3,
+      "timeToReleaseMs": 410
+    },
+    "inputs": {
+      "where": "27 ft \u00b7 Above the Break 3",
+      "when": "Q3 \u00b7 01:26",
+      "how": "Running Jump Shot",
+      "situation": "Away vs DET"
+    },
+    "shotLocation": {
+      "x": -210,
+      "y": 174
+    },
+    "cors": false
+  },
+  {
+    "id": "0042500105-611",
+    "url": "https://videos.nba.com/nba/pbp/media/2026/04/29/0042500105/611/a34b0515-5f64-e614-4845-1e06d5a25efe_1280x720.mp4",
+    "series": "2026 R1 \u00b7 ORL @ DET \u00b7 Apr 29",
+    "player": "C. LeVert",
+    "action": "0' Tip Layup Shot",
+    "made": false,
+    "modelXfg": 0.6857,
+    "grade": "A+",
+    "metrics": {
+      "releaseAngleDeg": 38,
+      "releaseHeightFt": 9.8,
+      "bodyLeanDeg": 8,
+      "timeToReleaseMs": 290
+    },
+    "inputs": {
+      "where": "0 ft \u00b7 Restricted Area",
+      "when": "Q4 \u00b7 06:24",
+      "how": "Tip Layup Shot",
+      "situation": "Home vs ORL"
+    },
+    "shotLocation": {
+      "x": 0,
+      "y": 0
+    },
+    "cors": false
+  }
+]
