@@ -90,11 +90,10 @@ export function WatchShot({ shots }: { shots: ShotsMap }) {
 
   const onShuffleClip = useCallback(() => {
     if (WATCH_CLIPS.length === 0) return;
-    // Use the functional setter so we always read the freshest currentClip,
-    // not whatever was captured in this callback's closure.
+    // Functional updater reads the freshest currentClip — guards against the
+    // stale-closure bug where rapid clicks all see the same `currentClip`.
     setCurrentClip((prev) => {
-      const idx = WATCH_CLIPS.findIndex((c) => c.id === prev?.id);
-      const next = WATCH_CLIPS[(idx + 1) % WATCH_CLIPS.length];
+      const next = pickRandomClip(prev?.id);
       setVideoSrc(next.url);
       return next;
     });
@@ -288,10 +287,12 @@ export function WatchShot({ shots }: { shots: ShotsMap }) {
               </div>
             </div>
 
-            {/* Detail card */}
+            {/* Detail card — keyed on clip.id so React always remounts the
+                whole card subtree on shuffle (eliminates any chance of stale
+                children carrying over from the prior clip). */}
             {currentClip && (
               <div className="mt-6">
-                <ShotDetailCard clip={currentClip} onShuffle={onShuffleClip} />
+                <ShotDetailCard key={currentClip.id} clip={currentClip} onShuffle={onShuffleClip} />
               </div>
             )}
           </div>
