@@ -17,13 +17,10 @@ import type { ShotDatum } from "./ShotMap";
  * baseline.
  */
 
-// Extended viewBox: same width and height as the court PLUS extra vertical
-// space above the baseline so the arc apex isn't clipped on long shots.
-const PAD_ABOVE = 320;
-const VB_X = COURT.X_MIN;
-const VB_Y = COURT.Y_MIN - PAD_ABOVE;
-const VB_W = COURT.W;
-const VB_H = COURT.H + PAD_ABOVE;
+// viewBox is now derived per-shot so the container hugs the arc instead of
+// reserving 300+ units of dead space above the baseline for hypothetical
+// long-range bombs. Placeholder uses a sane default landscape ratio.
+const PLACEHOLDER_ASPECT = 500 / 360;
 
 export function TrajectoryReplay({
   shot,
@@ -36,7 +33,7 @@ export function TrajectoryReplay({
     return (
       <div
         className="w-full rounded-xl ring-1 ring-white/5 bg-[#0a0a0a] grid place-items-center text-white/30 text-xs uppercase tracking-[0.18em]"
-        style={{ aspectRatio: `${VB_W} / ${VB_H}` }}
+        style={{ aspectRatio: PLACEHOLDER_ASPECT }}
       >
         Pick a shot to watch it fly.
       </div>
@@ -57,6 +54,17 @@ export function TrajectoryReplay({
   const peakY = midY - distance * 1.2; // negative direction = upward, lifts the arc
 
   const path = `M ${shotX} ${shotY} Q ${midX} ${peakY} ${hoopX} ${hoopY}`;
+
+  // Tight viewBox: top fits the arc apex, bottom shows enough court for
+  // context (paint + a bit beyond the shooter). Width stays full half-court.
+  const VB_PAD_TOP = 40;
+  const VB_PAD_BOTTOM = 80;
+  const minY = Math.min(shotY, peakY, hoopY) - VB_PAD_TOP;
+  const maxY = Math.max(shotY, hoopY, COURT.PAINT_TOP_Y) + VB_PAD_BOTTOM;
+  const VB_X = COURT.X_MIN;
+  const VB_Y = minY;
+  const VB_W = COURT.W;
+  const VB_H = maxY - minY;
 
   // Identity key — remounts the SVG and replays the animation on every pick.
   const key = `${shot.x}-${shot.y}-${shot.made}-${shot.xfg}`;
