@@ -463,12 +463,9 @@ function SingleArc({
 
   return (
     <group>
-      <line
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ref={lineRef as any}
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        geometry={geometry as any}
-      >
+      {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+      {/* @ts-ignore — r3f's <line> is THREE.Line, TS picks SVG by default */}
+      <line ref={lineRef} geometry={geometry}>
         <lineBasicMaterial
           vertexColors
           transparent
