@@ -23,6 +23,7 @@ import json
 import ssl
 import sys
 import time
+import urllib.error
 import urllib.request
 from pathlib import Path
 from typing import Any
@@ -55,15 +56,18 @@ SSL_CTX.check_hostname = False
 SSL_CTX.verify_mode = ssl.CERT_NONE
 
 # Target ~120 clips total. Picking a diverse spread by:
-#   - varied players (top-volume + bench guys)
-#   - varied shot zones
+#   - true round-robin ACROSS games (every series + round represented)
+#   - varied players + zones + action types within each game
 #   - mix of makes and misses
-#   - across multiple games / rounds
 TARGET_CLIPS = 120
-SLEEP_BETWEEN = 0.35  # be polite to stats.nba.com
+SHOTS_PER_GAME = 4  # aim for this many clips per playoff game
+SLEEP_BETWEEN = 0.5  # be polite to stats.nba.com
+MAX_503_BACKOFF = 8  # seconds; doubled on consecutive failures
 
 
-def fetch_video_url(game_id: str, shot_id: int) -> str | None:
+def fetch_video_url(game_id: str, shot_id: int, backoff_ref: list) -> str | None:
+    """Fetch one video URL. backoff_ref is a 1-element list holding the current
+    backoff seconds; we double it on 503 and reset it on success."""
     url = (
         f"https://stats.nba.com/stats/videoeventsasset"
         f"?GameEventID={shot_id}&GameID={game_id}"
@@ -72,9 +76,17 @@ def fetch_video_url(game_id: str, shot_id: int) -> str | None:
     try:
         with urllib.request.urlopen(req, timeout=15, context=SSL_CTX) as r:
             data = json.loads(r.read().decode())
+    except urllib.error.HTTPError as e:
+        if e.code == 503:
+            wait = min(MAX_503_BACKOFF, backoff_ref[0])
+            print(f"  ! 503 — backing off {wait}s", file=sys.stderr)
+            time.sleep(wait)
+            backoff_ref[0] = min(MAX_503_BACKOFF, backoff_ref[0] * 2)
+        return None
     except Exception as e:
         print(f"  ! {game_id}/{shot_id}: {type(e).__name__}: {e}", file=sys.stderr)
         return None
+    backoff_ref[0] = 1  # reset on success
     meta = data.get("resultSets", {}).get("Meta", {})
     urls = meta.get("videoUrls") or []
     if not urls:
@@ -111,37 +123,43 @@ def approx_xfg(shot: dict[str, Any]) -> float:
 
 
 def pick_diverse_candidates(shots_by_game: dict, games: list[dict]) -> list[tuple[dict, dict]]:
-    """Return up to ~2x TARGET candidates (game, shot) so the API can refuse some."""
-    # Build flat list with game ref
-    all_pairs = []
+    """Return candidates ordered for true round-robin across games — pass 1
+    gives us one candidate per game (so every playoff game is represented),
+    pass 2 a second per game, etc. Within each game we bias toward variety:
+    different players + zones rather than 4 of the same player's threes."""
     game_by_id = {g["game_id"]: g for g in games}
+
+    # For each game, build a diversity-ordered queue: alternate by
+    # (player, action_type) so successive picks from the same game don't
+    # duplicate the same shot family.
+    per_game_queues: dict[str, list[tuple[dict, dict]]] = {}
     for game_id, shots in shots_by_game.items():
         g = game_by_id.get(game_id)
         if not g:
             continue
+        buckets: dict[tuple[str, str], list[dict]] = {}
         for s in shots:
-            all_pairs.append((g, s))
+            buckets.setdefault((s["player_name"], s["action_type"]), []).append(s)
+        ordered: list[dict] = []
+        while buckets:
+            for key in list(buckets.keys()):
+                lst = buckets[key]
+                if not lst:
+                    buckets.pop(key, None)
+                    continue
+                ordered.append(lst.pop(0))
+        per_game_queues[game_id] = [(g, s) for s in ordered]
 
-    # Bucket by (player_name, action_type) so we don't shovel 20 of the same
-    # player's catch-and-shoot threes into the pool — gives natural variety.
-    buckets: dict[tuple[str, str], list[tuple[dict, dict]]] = {}
-    for pair in all_pairs:
-        key = (pair[1]["player_name"], pair[1]["action_type"])
-        buckets.setdefault(key, []).append(pair)
-
-    # Round-robin pick from each bucket until we have 2x target.
+    # Round-robin across games. Pass 1: take 1 from each game. Pass 2: 2nd
+    # from each. Etc. Stop when we've got >= TARGET * 2 candidates.
     out: list[tuple[dict, dict]] = []
-    while len(out) < TARGET_CLIPS * 2 and buckets:
-        empty_keys = []
-        for key, lst in buckets.items():
-            if not lst:
-                empty_keys.append(key)
-                continue
-            out.append(lst.pop(0))
-            if len(out) >= TARGET_CLIPS * 2:
-                break
-        for k in empty_keys:
-            buckets.pop(k, None)
+    max_passes = max(SHOTS_PER_GAME * 2, 20)
+    for depth in range(max_passes):
+        for game_id, queue in per_game_queues.items():
+            if depth < len(queue):
+                out.append(queue[depth])
+        if len(out) >= TARGET_CLIPS * 3:
+            break
     return out
 
 
@@ -183,16 +201,29 @@ def main() -> int:
     shots_by_game = json.loads(SHOTS_PATH.read_text())
     games = json.loads(GAMES_PATH.read_text())
 
-    candidates = pick_diverse_candidates(shots_by_game, games)
-    print(f"Trying {len(candidates)} candidate shots (target: {TARGET_CLIPS} good)...")
+    # Preserve any clips we already fetched on a previous run so re-running
+    # only top up the pool instead of re-paying for every NBA API call.
+    existing: list[dict] = []
+    if OUT_PATH.exists():
+        try:
+            existing = json.loads(OUT_PATH.read_text())
+            print(f"Resuming with {len(existing)} previously-fetched clips.")
+        except Exception:
+            existing = []
+    have_ids = {c["id"] for c in existing}
 
-    out: list[dict] = []
+    candidates = pick_diverse_candidates(shots_by_game, games)
+    candidates = [c for c in candidates if f'{c[0]["game_id"]}-{c[1]["shot_id"]}' not in have_ids]
+    print(f"Trying {len(candidates)} new candidate shots (target: {TARGET_CLIPS} good)...")
+
+    out: list[dict] = list(existing)
     tried = 0
+    backoff_ref = [1]
     for game, shot in candidates:
         if len(out) >= TARGET_CLIPS:
             break
         tried += 1
-        url = fetch_video_url(game["game_id"], shot["shot_id"])
+        url = fetch_video_url(game["game_id"], shot["shot_id"], backoff_ref)
         time.sleep(SLEEP_BETWEEN)
         if not url:
             continue
