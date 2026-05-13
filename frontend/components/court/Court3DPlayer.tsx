@@ -297,6 +297,10 @@ function easeOutCubic(t: number): number {
   return 1 - u * u * u;
 }
 
+type ThickLine = {
+  material: { opacity: number; needsUpdate?: boolean };
+};
+
 function SingleArc({
   arc,
   startEpoch,
@@ -307,6 +311,7 @@ function SingleArc({
   cycleMs: number;
 }) {
   const lineRef = useRef<THREE.Line>(null);
+  const thickLineRef = useRef<ThickLine | null>(null);
   const headRef = useRef<THREE.Mesh>(null);
   const headMatRef = useRef<THREE.MeshBasicMaterial>(null);
   const haloRef = useRef<THREE.Mesh>(null);
@@ -407,6 +412,15 @@ function SingleArc({
     // Subtle breathing pulse on the head so it never feels static.
     const pulse = 1 + 0.08 * Math.sin(now * 0.018);
 
+    // Thick base streak — fades in as the comet starts flying, holds while
+    // it's mid-air, then fades with the rest of the arc. This is what gives
+    // the trail its visible chunkiness instead of looking like a thread.
+    if (thickLineRef.current?.material) {
+      const flightProgress = phase === "flying" ? Math.min(1, (local / flight) * 2.2) : 1;
+      const baseAlpha = phase === "fading" ? (1 - fadeK) : phase === "flying" ? flightProgress : 0;
+      thickLineRef.current.material.opacity = baseAlpha * 0.65;
+    }
+
     if (headRef.current && headMatRef.current) {
       headRef.current.position.set(px, py, pz);
       headRef.current.scale.setScalar(pulse);
@@ -463,6 +477,21 @@ function SingleArc({
 
   return (
     <group>
+      {/* Thick base path — drei's <Line> uses Line2/LineMaterial so its width
+          is real screen-space pixels, not the 1px WebGL line cap. This is the
+          visible streak; the <line> below paints the bright comet wave on top. */}
+      <Line
+        ref={(l) => {
+          thickLineRef.current = l as unknown as ThickLine | null;
+        }}
+        points={arc.points}
+        color={ARC_GREEN}
+        lineWidth={3.5}
+        transparent
+        opacity={0}
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+      />
       {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
       {/* @ts-ignore — r3f's <line> is THREE.Line, TS picks SVG by default */}
       <line ref={lineRef} geometry={geometry}>
