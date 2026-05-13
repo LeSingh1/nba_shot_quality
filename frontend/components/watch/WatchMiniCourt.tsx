@@ -82,9 +82,9 @@ export function WatchMiniCourt({
         {/* Corner-3 verticals */}
         <line x1={arcStartX} y1={BASELINE_Y} x2={arcStartX} y2={arcY} />
         <line x1={arcEndX} y1={BASELINE_Y} x2={arcEndX} y2={arcY} />
-        {/* 3-point arc */}
+        {/* 3-point arc — sweep-flag=0 bulges away from baseline (toward midcourt). */}
         <path
-          d={`M ${arcStartX} ${arcY} A ${THREE_RADIUS} ${THREE_RADIUS} 0 0 1 ${arcEndX} ${arcY}`}
+          d={`M ${arcStartX} ${arcY} A ${THREE_RADIUS} ${THREE_RADIUS} 0 0 0 ${arcEndX} ${arcY}`}
         />
         {/* Paint */}
         <rect
@@ -93,9 +93,9 @@ export function WatchMiniCourt({
           width={PAINT_HALF_W * 2}
           height={FT_LINE_Y - BASELINE_Y}
         />
-        {/* Restricted area */}
+        {/* Restricted area — sweep-flag=0 to bulge toward midcourt. */}
         <path
-          d={`M ${HOOP_X - RESTRICTED_RADIUS} ${HOOP_Y} A ${RESTRICTED_RADIUS} ${RESTRICTED_RADIUS} 0 0 1 ${HOOP_X + RESTRICTED_RADIUS} ${HOOP_Y}`}
+          d={`M ${HOOP_X - RESTRICTED_RADIUS} ${HOOP_Y} A ${RESTRICTED_RADIUS} ${RESTRICTED_RADIUS} 0 0 0 ${HOOP_X + RESTRICTED_RADIUS} ${HOOP_Y}`}
         />
       </g>
 

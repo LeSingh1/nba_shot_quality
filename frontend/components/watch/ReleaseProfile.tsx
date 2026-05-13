@@ -85,7 +85,7 @@ export function ReleaseProfile({
       className="
         relative rounded-2xl overflow-hidden
         border border-white/8
-        bg-gradient-to-b from-white/[0.04] to-white/[0.015]
+        bg-white/[0.025]
       "
     >
       <AnimatePresence mode="wait">
@@ -266,12 +266,7 @@ function TimeBar({ fraction, good }: { fraction: number; good: boolean }) {
         transition={{ duration: 0.75, ease: EASE, delay: 0.1 }}
         className="absolute inset-y-0 left-0 rounded-full"
         style={{
-          background: good
-            ? "linear-gradient(90deg, #34D399 0%, #34D399 100%)"
-            : "linear-gradient(90deg, var(--nike-accent) 0%, var(--nike-accent) 100%)",
-          boxShadow: good
-            ? "0 0 10px rgba(52,211,153,0.4)"
-            : "0 0 10px rgba(255,45,111,0.35)",
+          background: good ? "#34D399" : "var(--nike-accent)",
         }}
       />
       {/* 600ms NBA-average tick */}

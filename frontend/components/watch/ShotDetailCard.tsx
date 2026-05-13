@@ -63,26 +63,9 @@ export function ShotDetailCard({ clip, onShuffle }: Props) {
         className="
           relative overflow-hidden rounded-2xl
           border border-white/10
-          bg-[linear-gradient(180deg,rgba(255,255,255,0.045)_0%,rgba(255,255,255,0.01)_100%)]
+          bg-white/[0.02]
         "
       >
-        {/* Background art — soft accent wash bleeding from the bottom-left
-            corner toward the center. Adds depth without distracting copy. */}
-        <div
-          aria-hidden
-          className="absolute -bottom-32 -left-32 w-[420px] h-[420px] rounded-full pointer-events-none"
-          style={{
-            background: `radial-gradient(circle, ${tone.accent}1f 0%, transparent 65%)`,
-            filter: "blur(40px)",
-          }}
-        />
-
-        {/* Accent rail */}
-        <span
-          aria-hidden
-          className="absolute left-0 top-7 bottom-7 w-[2px] rounded-r"
-          style={{ background: tone.accent, opacity: 0.6 }}
-        />
 
         <div className="relative grid grid-cols-1 md:grid-cols-[260px_1fr] gap-6 md:gap-10 p-6 md:p-8">
           {/* LEFT — court diagram */}

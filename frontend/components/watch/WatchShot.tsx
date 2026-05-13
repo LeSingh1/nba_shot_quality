@@ -89,13 +89,19 @@ export function WatchShot({ shots }: { shots: ShotsMap }) {
   }, [resetBall]);
 
   const onShuffleClip = useCallback(() => {
-    const next = pickRandomClip(currentClip?.id);
-    setCurrentClip(next);
-    setVideoSrc(next.url);
+    if (WATCH_CLIPS.length === 0) return;
+    // Use the functional setter so we always read the freshest currentClip,
+    // not whatever was captured in this callback's closure.
+    setCurrentClip((prev) => {
+      const idx = WATCH_CLIPS.findIndex((c) => c.id === prev?.id);
+      const next = WATCH_CLIPS[(idx + 1) % WATCH_CLIPS.length];
+      setVideoSrc(next.url);
+      return next;
+    });
     setDefaultMissing(false);
     detectorRef.current.reset();
     resetBall();
-  }, [currentClip, resetBall]);
+  }, [resetBall]);
 
   /** Per-frame loop — only runs for CORS-clean videos (user uploads). */
   const loop = useCallback(async () => {
