@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, AnimatePresence, useReducedMotion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import type { WatchClip } from "@/lib/watchClips";
 import { WatchMiniCourt } from "./WatchMiniCourt";
 
@@ -53,12 +53,10 @@ export function ShotDetailCard({ clip, onShuffle }: Props) {
   ];
 
   return (
-    <AnimatePresence mode="wait">
       <motion.article
         key={clip.id}
         initial={reduce ? { opacity: 0 } : { opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={reduce ? { opacity: 0 } : { opacity: 0, y: -8 }}
         transition={{ duration: 0.45, ease: EASE }}
         className="
           relative overflow-hidden rounded-2xl
@@ -115,6 +113,7 @@ export function ShotDetailCard({ clip, onShuffle }: Props) {
             {/* Top strip */}
             <div className="flex items-center gap-3 flex-wrap">
               <ResultChip made={clip.made} tone={tone} />
+              <GradeChip grade={clip.grade} />
               <SeriesLabel series={clip.series} />
               <ShuffleButton onClick={onShuffle} />
             </div>
@@ -207,7 +206,6 @@ export function ShotDetailCard({ clip, onShuffle }: Props) {
           </div>
         </div>
       </motion.article>
-    </AnimatePresence>
   );
 }
 
@@ -265,6 +263,36 @@ function FloorStat({
         {value}
       </dd>
     </div>
+  );
+}
+
+function GradeChip({ grade }: { grade: string }) {
+  // Quick visual cue: green for A/A+, lime B, amber C, red D/F.
+  const fg =
+    grade === "A+" || grade === "A"
+      ? "#34D399"
+      : grade === "B"
+      ? "#A3E635"
+      : grade === "C"
+      ? "#FBBF24"
+      : grade === "D"
+      ? "#F87171"
+      : "#EF4444";
+  return (
+    <motion.span
+      initial={{ opacity: 0, scale: 0.94 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ type: "spring", stiffness: 320, damping: 22 }}
+      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono uppercase tracking-[0.22em]"
+      style={{
+        border: `1px solid ${fg}55`,
+        background: `${fg}14`,
+        color: fg,
+      }}
+      aria-label={`Shot grade ${grade}`}
+    >
+      Grade {grade}
+    </motion.span>
   );
 }
 
