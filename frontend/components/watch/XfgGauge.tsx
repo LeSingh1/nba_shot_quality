@@ -77,9 +77,6 @@ export function XfgGauge({
           initial={reduce ? { strokeDashoffset: offset } : { strokeDashoffset: circ }}
           animate={{ strokeDashoffset: offset }}
           transition={{ type: "spring", stiffness: 60, damping: 18, mass: 0.9 }}
-          style={{
-            filter: `drop-shadow(0 0 14px color-mix(in srgb, ${tone} 45%, transparent))`,
-          }}
         />
         {/* Tick marks every 25% */}
         {[0.25, 0.5, 0.75].map((t) => {

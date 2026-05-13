@@ -110,30 +110,6 @@ export const WATCH_CLIPS: readonly WatchClip[] = [
     shotLocation: { x: -12, y: 38 },
     cors: false,
   },
-  {
-    id: "orl-det-g1-wing-3",
-    url: "https://videos.nba.com/nba/pbp/media/2026/04/19/0042500101/29/c89f4a2b-1107-4f86-9b1d-7a31e8b2c604_1280x720.mp4",
-    series: "2026 R1 G1 · ORL vs DET",
-    player: "C. Cunningham",
-    action: "24' Catch-and-Shoot 3PT",
-    made: false,
-    modelXfg: 0.41,
-    metrics: {
-      releaseAngleDeg: 47,
-      releaseHeightFt: 9.2,
-      bodyLeanDeg: 2,
-      timeToReleaseMs: 380,
-    },
-    inputs: {
-      where: "24 ft · Right Wing 3",
-      when: "Q1 · 9:48 · early game",
-      how: "Catch and shoot · off pin-down",
-      situation: "Home · ~5 ft of space · trailing by 8",
-    },
-    // 24 ft right wing — angle ~40° from baseline, sin*240≈154, cos*240≈184
-    shotLocation: { x: 154, y: 184 },
-    cors: false,
-  },
 ];
 
 export function pickRandomClip(exceptId?: string): WatchClip {

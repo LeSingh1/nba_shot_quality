@@ -287,9 +287,9 @@ function buildArcs(shots: ShotDatum[]): { arcs: ArcDef[]; cycleMs: number } {
 }
 
 // Number of trailing sparkle particles behind the ball head.
-const TRAIL_PARTICLES = 6;
+const TRAIL_PARTICLES = 12;
 // How many path segments behind the head the comet trail spans.
-const COMET_LENGTH = 14;
+const COMET_LENGTH = 22;
 // Easing applied to the arc head's t so it decelerates into the rim — gives
 // a "gravity slow-down" feel as the ball arrives at the hoop.
 function easeOutCubic(t: number): number {
@@ -415,18 +415,18 @@ function SingleArc({
     }
     if (haloRef.current && haloMatRef.current) {
       haloRef.current.position.set(px, py, pz);
-      haloRef.current.scale.setScalar(pulse * 1.15);
-      haloMatRef.current.opacity = headOpacity * 0.32;
+      haloRef.current.scale.setScalar(pulse * 1.25);
+      haloMatRef.current.opacity = headOpacity * 0.55;
       haloRef.current.visible = headVisible;
     }
 
-    // Trail sparkles — small spheres lagging behind the head at fixed
-    // increments along the path. They get smaller and more transparent the
-    // further back they sit.
+    // Trail sparkles — chunky orbs packed tight behind the head so they read
+    // as a single thick streak rather than discrete dots. They get smaller
+    // and more transparent the further back they sit.
     for (let k = 0; k < TRAIL_PARTICLES; k++) {
       const ref = trailRefs.current[k];
       if (!ref.mesh || !ref.mat) continue;
-      const lag = (k + 1) * 1.8; // segments behind the head
+      const lag = (k + 1) * 1.05; // tight spacing so the trail looks continuous
       const trailIdx = headIdx - lag;
       if (trailIdx < 0) {
         ref.mesh.visible = false;
@@ -442,8 +442,8 @@ function SingleArc({
         p0[2] + (p1[2] - p0[2]) * tf,
       );
       const t = 1 - k / TRAIL_PARTICLES;
-      ref.mesh.scale.setScalar(0.6 + 0.4 * t);
-      ref.mat.opacity = headOpacity * 0.75 * t;
+      ref.mesh.scale.setScalar(0.7 + 0.6 * t);
+      ref.mat.opacity = headOpacity * 0.9 * t;
       ref.mesh.visible = headVisible;
     }
 
@@ -474,9 +474,9 @@ function SingleArc({
           blending={THREE.AdditiveBlending}
         />
       </line>
-      {/* Outer halo */}
+      {/* Outer halo — beefier so the head reads from 3+ feet away */}
       <mesh ref={haloRef} position={arc.points[0]}>
-        <sphereGeometry args={[0.26, 16, 16]} />
+        <sphereGeometry args={[0.42, 16, 16]} />
         <meshBasicMaterial
           ref={haloMatRef}
           color={ARC_GREEN}
@@ -488,7 +488,7 @@ function SingleArc({
       </mesh>
       {/* Bright head */}
       <mesh ref={headRef} position={arc.points[0]}>
-        <sphereGeometry args={[0.14, 16, 16]} />
+        <sphereGeometry args={[0.22, 16, 16]} />
         <meshBasicMaterial
           ref={headMatRef}
           color="#e6ffe9"
@@ -497,7 +497,7 @@ function SingleArc({
           depthWrite={false}
         />
       </mesh>
-      {/* Trail sparkles */}
+      {/* Trail sparkles — chunkier orbs so the trail reads as a thick streak */}
       {Array.from({ length: TRAIL_PARTICLES }).map((_, k) => (
         <mesh
           key={k}
@@ -506,7 +506,7 @@ function SingleArc({
           }}
           position={arc.points[0]}
         >
-          <sphereGeometry args={[0.08, 10, 10]} />
+          <sphereGeometry args={[0.14, 10, 10]} />
           <meshBasicMaterial
             ref={(mat) => {
               trailRefs.current[k].mat = mat;
