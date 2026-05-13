@@ -18,28 +18,19 @@ export function MetricCard({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 14, scale: 0.96 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.55, delay, ease: [0.16, 1, 0.3, 1] }}
-      className={`relative rounded-xl bg-white/[0.04] backdrop-blur-md border border-white/10 p-5 ${className}`}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.45, delay, ease: [0.16, 1, 0.3, 1] }}
+      className={`rounded-lg bg-white/[0.025] border border-white/8 p-5 ${className}`}
       style={
         highlight
           ? {
-              borderColor: "color-mix(in srgb, var(--nike-accent) 60%, transparent)",
-              boxShadow:
-                "0 18px 50px color-mix(in srgb, var(--nike-accent) 30%, transparent), inset 0 1px 0 rgba(255,255,255,0.06)",
+              borderColor: "color-mix(in srgb, var(--nike-accent) 45%, transparent)",
             }
-          : {
-              boxShadow:
-                "0 10px 28px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04)",
-            }
+          : undefined
       }
     >
-      <div className="text-[10px] uppercase tracking-[0.24em] text-white/55 mb-2 flex items-center gap-2">
-        <span
-          className="w-1.5 h-1.5 rounded-full"
-          style={{ background: highlight ? "var(--nike-accent)" : "rgba(255,255,255,0.35)" }}
-        />
+      <div className="text-[10px] uppercase tracking-[0.24em] text-white/45 mb-3 font-mono">
         {label}
       </div>
       {children}
