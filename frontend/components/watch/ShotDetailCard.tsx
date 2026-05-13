@@ -327,21 +327,15 @@ function GradeChip({ grade }: { grade: string }) {
 function ResultChip({ made, tone }: { made: boolean; tone: Tone }) {
   return (
     <motion.span
-      initial={{ opacity: 0, scale: 0.94 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ type: "spring", stiffness: 320, damping: 22 }}
-      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono uppercase tracking-[0.22em]"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.35, ease: EASE }}
+      className="inline-flex items-center px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.22em]"
       style={{
         border: `1px solid ${tone.chipBorder}`,
-        background: tone.chipBg,
         color: tone.chipFg,
       }}
     >
-      <span
-        aria-hidden
-        className="h-1.5 w-1.5 rounded-full"
-        style={{ background: tone.chipFg }}
-      />
       {made ? "Make" : "Miss"}
     </motion.span>
   );
@@ -466,11 +460,6 @@ function LibraryPanel({
                         disabled:bg-white/[0.06] disabled:cursor-default
                       "
                     >
-                      <span
-                        aria-hidden
-                        className="h-1.5 w-1.5 rounded-full shrink-0"
-                        style={{ background: c.made ? "#34D399" : "var(--nike-accent)" }}
-                      />
                       <span className="font-medium text-white/90 min-w-[110px] truncate">
                         {c.player}
                       </span>
