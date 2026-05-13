@@ -114,15 +114,25 @@ export function ShotDetailCard({ clip, library, onPick }: Props) {
           {/* RIGHT — content */}
           <div className="flex flex-col">
             {/* Top strip */}
-            <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-start gap-3 flex-wrap">
               <ResultChip made={clip.made} tone={tone} />
-              <GradeChip grade={clip.grade} />
               <SeriesLabel series={clip.series} />
-              <LibraryButton
-                count={library.length}
-                open={libraryOpen}
-                onClick={() => setLibraryOpen((v) => !v)}
-              />
+              <div className="ml-auto flex flex-col items-end gap-2">
+                <ShuffleButton
+                  onClick={() => {
+                    // Pick a random clip from the library other than the
+                    // currently displayed one.
+                    const others = library.filter((c) => c.id !== clip.id);
+                    const next = others[Math.floor(Math.random() * others.length)];
+                    if (next) onPick(next);
+                  }}
+                />
+                <LibraryButton
+                  count={library.length}
+                  open={libraryOpen}
+                  onClick={() => setLibraryOpen((v) => !v)}
+                />
+              </div>
             </div>
 
             {/* Headline */}
@@ -347,6 +357,36 @@ function SeriesLabel({ series }: { series: string }) {
     >
       {series}
     </motion.span>
+  );
+}
+
+function ShuffleButton({ onClick }: { onClick: () => void }) {
+  return (
+    <motion.button
+      type="button"
+      onClick={onClick}
+      whileHover={{ y: -1 }}
+      whileTap={{ scale: 0.96 }}
+      transition={{ type: "spring", stiffness: 320, damping: 18 }}
+      className="inline-flex items-center gap-2 rounded-full border border-white/15 px-3.5 py-1.5 text-[10px] uppercase tracking-[0.2em] text-white/75 hover:text-white hover:border-white/40 transition-colors"
+      aria-label="Shuffle to a random clip"
+    >
+      <motion.svg
+        viewBox="0 0 16 16"
+        width="11"
+        height="11"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        aria-hidden
+        whileHover={{ rotate: 180 }}
+        transition={{ duration: 0.45, ease: EASE }}
+      >
+        <path d="M2 4h7l2.5 2.5M14 4l-2 2-2-2M2 12h7l2.5-2.5M14 12l-2-2-2 2" />
+      </motion.svg>
+      Shuffle clip
+    </motion.button>
   );
 }
 
