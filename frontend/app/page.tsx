@@ -20,7 +20,7 @@ export default function Page() {
     <main id="main-content" className="bg-[#0a0a0a]">
       <NikeTopbar />
       <PlayerHero shots={data.shots} ranking={data.ranking} meta={data.meta} />
-      <Reveal><WhereTheyShot shots={data.shots} ranking={data.ranking} /></Reveal>
+      <Reveal><WhereTheyShot shots={data.shots} /></Reveal>
       <Reveal><EveryShot shots={data.shots} ranking={data.ranking} /></Reveal>
       <HeavySections shots={data.shots} />
       <Reveal><StressTest shots={data.shots} ranking={data.ranking} /></Reveal>

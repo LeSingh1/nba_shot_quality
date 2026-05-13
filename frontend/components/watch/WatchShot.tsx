@@ -1,9 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
 import type { ShotsMap } from "@/lib/types";
-import { CountUp } from "@/components/nike/CountUp";
 import { useMoveNet } from "@/hooks/useMoveNet";
 import { useBallTracking } from "@/hooks/useBallTracking";
 import {
@@ -11,9 +9,8 @@ import {
   type LockedMetrics,
 } from "./ReleaseDetector";
 import { SKELETON, type Keypoint } from "./pose-types";
-import { GaugeAngle } from "./GaugeAngle";
-import { MetricCard } from "./MetricCard";
 import { ShotDetailCard } from "./ShotDetailCard";
+import { ReleaseProfile } from "./ReleaseProfile";
 import { WATCH_CLIPS, pickRandomClip, type WatchClip } from "@/lib/watchClips";
 
 /**
@@ -285,77 +282,17 @@ export function WatchShot({ shots }: { shots: ShotsMap }) {
             )}
           </div>
 
-          {/* RIGHT — five metric tiles */}
-          <div className="col-span-12 lg:col-span-4 space-y-3">
-            <div className="text-[10px] uppercase tracking-[0.24em] text-white/40 font-mono pb-1">
-              Locked at release
-            </div>
-
-            <AnimatePresence mode="wait">
-              <div key={currentClip?.id ?? locked?.releaseFrameTs ?? "idle"} className="space-y-3">
-                <MetricCard label="Release angle" delay={0}>
-                  <div className="flex justify-center -my-1">
-                    <GaugeAngle valueDeg={locked?.releaseAngleDeg ?? 0} accent="var(--nike-accent)" />
-                  </div>
-                  <div className="text-[10px] text-white/40 text-center font-mono uppercase tracking-[0.18em]">
-                    Ideal zone 45–52°
-                  </div>
-                </MetricCard>
-
-                <MetricCard label="Release height" delay={0.06}>
-                  <span
-                    className="font-black tabular-nums leading-none text-white"
-                    style={{ fontFamily: "var(--font-display)", fontSize: 46 }}
-                  >
-                    <CountUp value={locked?.releaseHeightFt ?? 0} decimals={1} />
-                    <span className="text-white/50 text-[20px] ml-2 font-medium">ft</span>
-                  </span>
-                </MetricCard>
-
-                <MetricCard label="Body lean" delay={0.12}>
-                  <span
-                    className="font-black tabular-nums leading-none text-white"
-                    style={{ fontFamily: "var(--font-display)", fontSize: 46 }}
-                  >
-                    <CountUp value={locked?.bodyLeanDeg ?? 0} decimals={0} />
-                    <span className="text-white/50 text-[20px] ml-1 font-medium">°</span>
-                  </span>
-                </MetricCard>
-
-                <MetricCard label="Time to release" delay={0.18}>
-                  <div className="flex items-baseline justify-between gap-3 mb-3">
-                    <span
-                      className="font-black tabular-nums leading-none text-white"
-                      style={{ fontFamily: "var(--font-display)", fontSize: 46 }}
-                    >
-                      <CountUp value={locked?.timeToReleaseMs ?? 0} decimals={0} />
-                      <span className="text-white/50 text-[20px] ml-1 font-medium">ms</span>
-                    </span>
-                    <span className="text-[10px] uppercase tracking-[0.16em] text-white/40 font-mono">
-                      avg ≈ 600
-                    </span>
-                  </div>
-                  <ProgressBar valueMs={locked?.timeToReleaseMs ?? 0} />
-                </MetricCard>
-
-                <MetricCard label="Model xFG%" delay={0.24} highlight>
-                  <motion.div
-                    key={locked ? "locked" : "idle"}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                    className="font-black tabular-nums leading-none"
-                    style={{
-                      fontFamily: "var(--font-display)",
-                      fontSize: 62,
-                      color: "var(--nike-accent)",
-                    }}
-                  >
-                    <CountUp value={(demoXfg ?? 0) * 100} decimals={0} />%
-                  </motion.div>
-                </MetricCard>
-              </div>
-            </AnimatePresence>
+          {/* RIGHT — unified release profile (gauge + 4 input rows) */}
+          <div className="col-span-12 lg:col-span-4 lg:sticky lg:top-6 lg:self-start">
+            <ReleaseProfile
+              keyId={currentClip?.id ?? `live-${locked?.releaseFrameTs ?? "idle"}`}
+              xfg={demoXfg ?? 0}
+              made={currentClip?.made ?? true}
+              releaseAngleDeg={locked?.releaseAngleDeg ?? 0}
+              releaseHeightFt={locked?.releaseHeightFt ?? 0}
+              bodyLeanDeg={locked?.bodyLeanDeg ?? 0}
+              timeToReleaseMs={locked?.timeToReleaseMs ?? 0}
+            />
           </div>
         </div>
       </div>
@@ -441,21 +378,6 @@ function EmptyState({
           Choose video
         </button>
       </div>
-    </div>
-  );
-}
-
-function ProgressBar({ valueMs }: { valueMs: number }) {
-  const pct = Math.max(0, Math.min(100, (valueMs / 1200) * 100));
-  return (
-    <div className="h-1 w-full bg-white/8 rounded-full overflow-hidden">
-      <motion.div
-        className="h-full rounded-full"
-        style={{ background: "var(--nike-accent)" }}
-        initial={{ width: 0 }}
-        animate={{ width: `${pct}%` }}
-        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      />
     </div>
   );
 }
