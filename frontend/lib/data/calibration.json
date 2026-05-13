@@ -2,55 +2,55 @@
   "n_bins": 10,
   "deciles": [
     {
-      "bin_center": 0.3061,
-      "pred_mean": 0.3061,
-      "actual_rate": 0.2074
+      "bin_center": 0.3167,
+      "pred_mean": 0.3167,
+      "actual_rate": 0.2337
     },
     {
-      "bin_center": 0.3502,
-      "pred_mean": 0.3502,
-      "actual_rate": 0.3229
+      "bin_center": 0.3617,
+      "pred_mean": 0.3617,
+      "actual_rate": 0.311
     },
     {
-      "bin_center": 0.3622,
-      "pred_mean": 0.3622,
-      "actual_rate": 0.3365
+      "bin_center": 0.3688,
+      "pred_mean": 0.3688,
+      "actual_rate": 0.3464
     },
     {
-      "bin_center": 0.3709,
-      "pred_mean": 0.3709,
-      "actual_rate": 0.3876
+      "bin_center": 0.3758,
+      "pred_mean": 0.3758,
+      "actual_rate": 0.3844
     },
     {
-      "bin_center": 0.3803,
-      "pred_mean": 0.3803,
-      "actual_rate": 0.4124
+      "bin_center": 0.3856,
+      "pred_mean": 0.3856,
+      "actual_rate": 0.4255
     },
     {
-      "bin_center": 0.3995,
-      "pred_mean": 0.3995,
-      "actual_rate": 0.404
+      "bin_center": 0.4141,
+      "pred_mean": 0.4141,
+      "actual_rate": 0.4038
     },
     {
-      "bin_center": 0.4393,
-      "pred_mean": 0.4393,
-      "actual_rate": 0.4486
+      "bin_center": 0.4475,
+      "pred_mean": 0.4475,
+      "actual_rate": 0.4338
     },
     {
-      "bin_center": 0.4963,
-      "pred_mean": 0.4963,
-      "actual_rate": 0.4914
+      "bin_center": 0.4931,
+      "pred_mean": 0.4931,
+      "actual_rate": 0.5105
     },
     {
-      "bin_center": 0.6104,
-      "pred_mean": 0.6104,
-      "actual_rate": 0.641
+      "bin_center": 0.6132,
+      "pred_mean": 0.6132,
+      "actual_rate": 0.6351
     },
     {
-      "bin_center": 0.8196,
-      "pred_mean": 0.8196,
-      "actual_rate": 0.8953
+      "bin_center": 0.8013,
+      "pred_mean": 0.8013,
+      "actual_rate": 0.8812
     }
   ],
-  "max_deviation": 0.0987
+  "max_deviation": 0.083
 }
