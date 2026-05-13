@@ -17,10 +17,12 @@ import type { ShotDatum } from "./ShotMap";
  * baseline.
  */
 
-// viewBox is now derived per-shot so the container hugs the arc instead of
-// reserving 300+ units of dead space above the baseline for hypothetical
-// long-range bombs. Placeholder uses a sane default landscape ratio.
-const PLACEHOLDER_ASPECT = 500 / 360;
+// Container is height-capped so it never balloons on wide grids. The SVG
+// inside still uses preserveAspectRatio="xMidYMid meet" so the arc stays
+// centered regardless of the box ratio.
+const CONTAINER_CLASS =
+  "w-full rounded-xl ring-1 ring-white/5 bg-[#0a0a0a] " +
+  "h-[300px] sm:h-[340px] md:h-[380px] max-h-[420px]";
 
 export function TrajectoryReplay({
   shot,
@@ -32,8 +34,7 @@ export function TrajectoryReplay({
   if (!shot) {
     return (
       <div
-        className="w-full rounded-xl ring-1 ring-white/5 bg-[#0a0a0a] grid place-items-center text-white/30 text-xs uppercase tracking-[0.18em]"
-        style={{ aspectRatio: PLACEHOLDER_ASPECT }}
+        className={`${CONTAINER_CLASS} grid place-items-center text-white/30 text-xs uppercase tracking-[0.18em]`}
       >
         Pick a shot to watch it fly.
       </div>
@@ -73,8 +74,7 @@ export function TrajectoryReplay({
 
   return (
     <div
-      className="relative w-full rounded-xl ring-1 ring-white/5 overflow-hidden bg-[#0a0a0a]"
-      style={{ aspectRatio: `${VB_W} / ${VB_H}` }}
+      className={`relative ${CONTAINER_CLASS} overflow-hidden`}
     >
       <AnimatePresence mode="wait">
         <motion.svg
