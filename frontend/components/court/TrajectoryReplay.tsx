@@ -17,12 +17,11 @@ import type { ShotDatum } from "./ShotMap";
  * baseline.
  */
 
-// Container is height-capped so it never balloons on wide grids. The SVG
-// inside still uses preserveAspectRatio="xMidYMid meet" so the arc stays
-// centered regardless of the box ratio.
-const CONTAINER_CLASS =
-  "w-full rounded-xl ring-1 ring-white/5 bg-[#0a0a0a] " +
-  "h-[300px] sm:h-[340px] md:h-[380px] max-h-[420px]";
+// Container is height-capped via inline style so it never balloons on wide
+// grids and is immune to Tailwind purging quirks. The SVG inside still uses
+// preserveAspectRatio="xMidYMid meet" so the arc stays centered.
+const CONTAINER_CLASS = "w-full rounded-xl ring-1 ring-white/5 bg-[#0a0a0a] self-start";
+const CONTAINER_STYLE: React.CSSProperties = { height: 360, maxHeight: 420 };
 
 export function TrajectoryReplay({
   shot,
@@ -35,6 +34,7 @@ export function TrajectoryReplay({
     return (
       <div
         className={`${CONTAINER_CLASS} grid place-items-center text-white/30 text-xs uppercase tracking-[0.18em]`}
+        style={CONTAINER_STYLE}
       >
         Pick a shot to watch it fly.
       </div>
@@ -75,6 +75,7 @@ export function TrajectoryReplay({
   return (
     <div
       className={`relative ${CONTAINER_CLASS} overflow-hidden`}
+      style={CONTAINER_STYLE}
     >
       <AnimatePresence mode="wait">
         <motion.svg
