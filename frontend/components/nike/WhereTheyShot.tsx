@@ -2,27 +2,36 @@
 
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import type { ShotsMap } from "@/lib/types";
-import { FEATURED } from "@/lib/featured";
+import type { ShotsMap, RankingRow } from "@/lib/types";
 import { ShotMap, type ShotDatum } from "../court/ShotMap";
 
 type Mode = "all" | "makes" | "misses";
 
+const ACCENT = "#FF2D6F";
+
 /**
- * "Where they shot" — top-down half-court shot scatter for the selected
- * player. Flat geometry (no 3D tilt) matches the standard you see on
- * basketball-reference, Cleaning the Glass, PBPStats.
+ * "Where they shot" — a single league-wide tilted 3D shot map. Every
+ * playoff attempt from every player, no per-player drill-down. The
+ * Player → Game → Shot drill lives in the next section ("Every shot,
+ * every game") so this one stays a clean macro view.
  */
-export function WhereTheyShot({ shots }: { shots: ShotsMap }) {
-  const [playerId, setPlayerId] = useState<number>(FEATURED[0].id);
+export function WhereTheyShot({
+  shots,
+}: {
+  shots: ShotsMap;
+  ranking: RankingRow[];
+}) {
   const [mode, setMode] = useState<Mode>("all");
 
-  const player = FEATURED.find((p) => p.id === playerId)!;
-  const entry = shots[String(playerId)];
-  const allShots: ShotDatum[] = entry?.shots ?? [];
+  // Aggregate: every shot, every player.
+  const allShots: ShotDatum[] = useMemo(() => {
+    const out: ShotDatum[] = [];
+    for (const entry of Object.values(shots)) out.push(...entry.shots);
+    return out;
+  }, [shots]);
 
   const filtered = useMemo(() => {
-    if (mode === "makes")  return allShots.filter((s) => s.made === 1);
+    if (mode === "makes") return allShots.filter((s) => s.made === 1);
     if (mode === "misses") return allShots.filter((s) => s.made === 0);
     return allShots;
   }, [allShots, mode]);
@@ -34,16 +43,16 @@ export function WhereTheyShot({ shots }: { shots: ShotsMap }) {
       id="where-they-shot"
       className="relative bg-[#0a0a0a] text-white py-24 px-8 md:px-16 overflow-hidden"
     >
-      {/* Subtle accent backdrop wash */}
-      <motion.div
+      {/* Backdrop wash — static (no looping animation). With 10k SVG
+          circles on screen, looping a blur(60px) full-section background
+          tanked the framerate. */}
+      <div
         aria-hidden
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] rounded-full pointer-events-none"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] rounded-full pointer-events-none opacity-70"
         style={{
-          background: `radial-gradient(ellipse at center, ${player.primary}20 0%, transparent 70%)`,
+          background: `radial-gradient(ellipse at center, ${ACCENT}20 0%, transparent 70%)`,
           filter: "blur(60px)",
         }}
-        animate={{ opacity: [0.55, 0.8, 0.55] }}
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
       />
 
       <div className="relative max-w-7xl mx-auto">
@@ -59,12 +68,9 @@ export function WhereTheyShot({ shots }: { shots: ShotsMap }) {
               Where they shot.
             </h2>
             <p className="text-sm text-white/55 mt-3 max-w-2xl">
-              Every playoff attempt for{" "}
-              <span style={{ color: player.primary }}>
-                {player.firstName} {player.lastName}
-              </span>
-              , plotted on the half-court. Green = make, red = miss. Hover any dot
-              for distance, xFG%, and outcome.
+              Every playoff attempt across every player, plotted on a tilted
+              half-court. Green = make, red = miss. Filter by outcome with the
+              tabs.
             </p>
           </div>
 
@@ -80,7 +86,7 @@ export function WhereTheyShot({ shots }: { shots: ShotsMap }) {
                   <motion.span
                     layoutId="wts-mode-pill"
                     className="absolute inset-0 rounded-full"
-                    style={{ background: player.primary }}
+                    style={{ background: ACCENT }}
                     transition={{ type: "spring", stiffness: 280, damping: 28 }}
                   />
                 )}
@@ -95,66 +101,23 @@ export function WhereTheyShot({ shots }: { shots: ShotsMap }) {
           </div>
         </div>
 
-        <div className="grid grid-cols-12 gap-8">
-          {/* Player rail */}
-          <div className="col-span-12 md:col-span-3 space-y-1">
-            <div className="text-[11px] uppercase tracking-[0.2em] text-white/40 mb-3">
-              Player · {FEATURED.length}
-            </div>
-            {FEATURED.map((p) => {
-              const ps = shots[String(p.id)]?.shots ?? [];
-              const isActive = p.id === playerId;
-              const hasData = ps.length > 0;
-              return (
-                <motion.button
-                  key={p.id}
-                  onClick={() => setPlayerId(p.id)}
-                  whileHover={{ x: 4 }}
-                  transition={{ type: "spring", stiffness: 280, damping: 24 }}
-                  className="w-full flex items-center justify-between px-3 py-2 rounded-md text-sm transition relative disabled:opacity-40"
-                  disabled={!hasData}
-                  style={{
-                    background: isActive ? "rgba(255,255,255,0.06)" : "transparent",
-                  }}
-                >
-                  {isActive && (
-                    <motion.span
-                      layoutId="wts-active"
-                      className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r"
-                      style={{ background: p.primary }}
-                      transition={{ type: "spring", stiffness: 280, damping: 28 }}
-                    />
-                  )}
-                  <span className="font-medium text-left pl-3">
-                    {p.firstName.charAt(0)}. {p.lastName}
-                  </span>
-                  <span className="ml-3 text-[10px] uppercase tracking-wider text-white/35 font-mono">
-                    {hasData ? ps.length : "—"}
-                  </span>
-                </motion.button>
-              );
-            })}
-          </div>
+        {/* Full-width shot map */}
+        <ShotMap shots={filtered} accent={ACCENT} mode="result" tilted />
 
-          {/* Shot map */}
-          <div className="col-span-12 md:col-span-9">
-            <ShotMap shots={filtered} accent={player.primary} mode="result" />
-
-            <div className="mt-4 flex items-center justify-between text-[11px] uppercase tracking-[0.18em] text-white/40">
-              <AnimatePresence mode="wait">
-                <motion.span
-                  key={`${playerId}-${mode}`}
-                  initial={{ opacity: 0, y: -4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -4 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {filtered.length} {mode === "all" ? "attempts" : mode} · {madeCount}/{allShots.length} made overall
-                </motion.span>
-              </AnimatePresence>
-              <span>top-down · official NBA half-court dimensions</span>
-            </div>
-          </div>
+        <div className="mt-4 flex items-center justify-between text-[11px] uppercase tracking-[0.18em] text-white/40">
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={mode}
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.3 }}
+            >
+              {filtered.length.toLocaleString()} {mode === "all" ? "attempts" : mode} ·{" "}
+              {madeCount.toLocaleString()}/{allShots.length.toLocaleString()} made overall
+            </motion.span>
+          </AnimatePresence>
+          <span>3D · official NBA half-court dimensions</span>
         </div>
       </div>
     </section>

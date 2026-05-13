@@ -3,20 +3,22 @@
 import { useEffect, useState } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
 import { type FeaturedPlayer } from "@/lib/featured";
-import { headshotUrl } from "@/lib/playerMeta";
+import { headshotUrl, espnFullBodyUrl, PLAYER_META } from "@/lib/playerMeta";
 
 /**
  * Hero player image with a robust fallback chain:
  *
- *   1. /public/players/{id}-action.png  — preferred (full-body cutout)
- *   2. /public/players/{id}.png         — legacy slot
- *   3. cdn.nba.com/headshots/.../{id}.png — official NBA CDN headshot
- *   4. <PlayerSilhouette /> — jersey number + team color, never blank
+ *   1. /public/players/{id}-action.png  — locally-uploaded action cutout
+ *   2. /public/players/{id}.png         — legacy local slot
+ *   3. a.espncdn.com/.../full/{espnId}.png — ESPN's full-body (shoes→head)
+ *   4. cdn.nba.com/headshots/.../{id}.png — NBA CDN head-and-shoulders
+ *   5. <PlayerSilhouette /> — jersey number, never blank
  *
- * Each stage is tried in order via `onError`. A shimmer skeleton renders
- * while the chosen src is loading so the user never sees an empty box.
+ * The ESPN stage is the one that actually gives a full body. NBA's own
+ * endpoint is a head/shoulders crop. We try local files first so the user
+ * can drop custom transparent PNGs at /public/players/ and they win.
  */
-type Stage = "action" | "legacy" | "headshot" | "silhouette";
+type Stage = "action" | "legacy" | "espn" | "headshot" | "silhouette";
 
 export function PlayerImage({ player }: { player: FeaturedPlayer }) {
   const [stage, setStage] = useState<Stage>("action");
@@ -41,16 +43,20 @@ export function PlayerImage({ player }: { player: FeaturedPlayer }) {
   };
   const handleLeave = () => { mx.set(0); my.set(0); };
 
+  const espnId = PLAYER_META[player.id]?.espnId;
+
   const src =
     stage === "action"   ? `/players/${player.id}-action.png` :
     stage === "legacy"   ? `/players/${player.id}.png` :
+    stage === "espn"     ? (espnId ? espnFullBodyUrl(espnId) : null) :
     stage === "headshot" ? headshotUrl(player.id) :
     null;
 
   const handleError = () => {
     setLoaded(false);
-    if (stage === "action")   setStage("legacy");
-    else if (stage === "legacy") setStage("headshot");
+    if (stage === "action")        setStage("legacy");
+    else if (stage === "legacy")   setStage(espnId ? "espn" : "headshot");
+    else if (stage === "espn")     setStage("headshot");
     else if (stage === "headshot") setStage("silhouette");
   };
 
@@ -129,9 +135,10 @@ export function PlayerImage({ player }: { player: FeaturedPlayer }) {
                   filter:
                     "drop-shadow(0 50px 70px rgba(0,0,0,0.7)) drop-shadow(0 0 36px color-mix(in srgb, var(--nike-accent) 32%, transparent))",
                   transform: "translateZ(40px)",
-                  // For NBA CDN headshots, the white background needs to be
-                  // blended into the dark hero. For uploaded action cutouts
-                  // (transparent PNGs), pass through unaltered.
+                  // ESPN + local action cutouts are transparent PNGs — show
+                  // them as-is so the full body is visible from shoes to
+                  // top of head. Only the NBA head/shoulders crop gets the
+                  // bottom-fade mask (it blends the awkward crop edge).
                   mixBlendMode: stage === "headshot" ? "lighten" : "normal",
                   maskImage:
                     stage === "headshot"

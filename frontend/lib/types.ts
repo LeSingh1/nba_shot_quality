@@ -14,9 +14,42 @@ export type RankingRow = {
   ci_hi: number | null;
 };
 
+export type Shot = {
+  x: number;
+  y: number;
+  made: 0 | 1;
+  xfg: number;
+  /** NBA GAME_ID (10-char string, e.g. "0042500121"). */
+  game?: string;
+  /** NBA GAME_DATE as YYYYMMDD. */
+  date?: string;
+  /** PERIOD: 1–4 for regulation, 5+ for OT. */
+  p?: number;
+  /** MINUTES_REMAINING in the period (descending with time elapsed). */
+  min?: number;
+  /** SECONDS_REMAINING in the current minute (descending). */
+  sec?: number;
+  /** Opponent abbreviation (tri-letter, e.g. "HOU"). */
+  opp?: string;
+  /** 1 if the player's team was home that game, 0 if on the road. */
+  home?: 0 | 1;
+  /** Descriptive shot action (e.g. "Step Back Jump shot"). */
+  action?: string;
+  /** SHOT_ZONE_BASIC (e.g. "Above the Break 3", "In The Paint (Non-RA)"). */
+  zone?: string;
+  /** SHOT_ZONE_AREA (e.g. "Left Side Center(LC)"). */
+  area?: string;
+  /** SHOT_ZONE_RANGE (e.g. "16-24 ft."). */
+  range?: string;
+  /** SHOT_DISTANCE in feet, from the NBA feed (integer). */
+  dist?: number;
+  /** 1 if 3-point attempt. */
+  is3?: 0 | 1;
+};
+
 export type PlayerShots = {
   name: string;
-  shots: Array<{ x: number; y: number; made: 0 | 1; xfg: number }>;
+  shots: Shot[];
 };
 
 export type ShotsMap = Record<string, PlayerShots>;

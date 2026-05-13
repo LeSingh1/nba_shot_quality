@@ -1,11 +1,154 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "motion/react";
 import { HalfCourt } from "./HalfCourt";
 import { COURT, isThreePointer, shotDistFt } from "./court-dimensions";
 
-export type ShotDatum = { x: number; y: number; made: 0 | 1; xfg: number };
+export type ShotDatum = {
+  x: number;
+  y: number;
+  made: 0 | 1;
+  xfg: number;
+  // Optional chronological fields used to order arc replays. When all four
+  // are present we sort makes by (date asc, period asc, min desc, sec desc).
+  // min/sec are NBA "remaining" — they decrease as game-time elapses.
+  date?: string;
+  p?: number;
+  min?: number;
+  sec?: number;
+};
+
+// ─── Arc/hoop overlay geometry ──────────────────────────────────────────────
+//
+// The floor SVG is CSS-rotated `rotateX(55deg)`, which foreshortens vertical
+// movement by cos(55°). We render the arcs + 3D hoop in a SEPARATE overlay
+// SVG that is NOT rotated — but we project floor positions through the same
+// compression so the arcs visually emanate from the right dots. The hoop's
+// backboard, rim and net are drawn ABOVE the floor's compressed hoop
+// position so they look like they're standing up off the court.
+
+const TILT_DEG = 55;
+const TILT_COS = Math.cos((TILT_DEG * Math.PI) / 180);
+const FLOOR_MID_Y = COURT.Y_MIN + COURT.H / 2;
+
+/** Project a floor SVG y to its screen y under the rotateX(55deg) transform. */
+function floorY(y: number): number {
+  return FLOOR_MID_Y + (y - FLOOR_MID_Y) * TILT_COS;
+}
+
+// Hoop, drawn in the overlay above the floor.
+const HOOP_FLOOR_Y = floorY(COURT.HOOP_Y); // where the dot floor-hoop appears
+const RIM_FRONT_Y = 28; // visible rim front-edge — raised well above the floor
+const RIM_BACK_Y = 16;
+const BACKBOARD_TOP = -22;
+const BACKBOARD_BOT = 14;
+const BACKBOARD_HALF_W = 40;
+const RIM_HALF_W = 20;
+const NET_DEPTH = 22; // how far the net hangs below the rim
+const ARC_END_Y = (RIM_FRONT_Y + RIM_BACK_Y) / 2;
+
+const ARC_MAX = 18; // cap so the screen doesn't get cluttered
+const ARC_DURATION = 1.5;
+const ARC_INTERVAL = 0.28;
+const ARC_HOLD = 0.8;
+const ARC_GREEN = "#86efac"; // soft mint
+const ARC_GREEN_BRIGHT = "#bbf7d0";
+
+type Arc = {
+  d: string;
+  // Sampled points (already in overlay/screen-space coords) for the ball head.
+  points: { x: number; y: number }[];
+  delay: number;
+};
+
+function chronoKey(s: ShotDatum): number {
+  // Combine date (YYYYMMDD), period, and remaining time into a sortable number.
+  // Missing fields → 0, which still produces a stable ordering (insertion order
+  // wins when sort is stable in modern engines).
+  const date = s.date ? Number(s.date) : 0;
+  const period = s.p ?? 0;
+  // Remaining time DECREASES with elapsed time, so negate to make later
+  // moments produce larger keys.
+  const elapsed = -((s.min ?? 0) * 60 + (s.sec ?? 0));
+  return date * 1e7 + period * 1e5 + elapsed;
+}
+
+function buildArcs(shots: ShotDatum[]): Arc[] {
+  // All makes outside the immediate rim area — close-range layups/dunks
+  // collapse into vertical lines and read as noise, not arcs.
+  const makes = shots.filter((s) => s.made === 1 && shotDistFt(s.x, s.y) >= 8);
+  if (makes.length === 0) return [];
+
+  // Sort chronologically — the player's makes "replayed" in game order.
+  const ordered = makes.slice().sort((a, b) => chronoKey(a) - chronoKey(b));
+
+  // If there are more makes than the cap, sample evenly across the timeline
+  // (first make, last make, and an even spread between) so we still cover the
+  // whole series rather than just the opening minutes.
+  let picked: ShotDatum[];
+  if (ordered.length <= ARC_MAX) {
+    picked = ordered;
+  } else {
+    picked = [];
+    const step = (ordered.length - 1) / (ARC_MAX - 1);
+    for (let i = 0; i < ARC_MAX; i++) {
+      picked.push(ordered[Math.round(i * step)]);
+    }
+  }
+
+  const arcs: Arc[] = [];
+  for (let i = 0; i < picked.length; i++) {
+    const s = picked[i];
+    const sx = s.x;
+    const sy = floorY(s.y); // compressed floor y so the arc origin lines up
+                            // exactly with the visible green dot underneath
+    const ex = COURT.HOOP_X;
+    const ey = ARC_END_Y;
+
+    // Apex sits well above the rim. Scale aggressively with distance so deep
+    // threes get a tall, dramatic rainbow and short jumpers still arch
+    // visibly rather than collapsing into a near-vertical line.
+    const groundDist = Math.hypot(s.x - COURT.HOOP_X, s.y - COURT.HOOP_Y);
+    const apexLift = 70 + groundDist * 0.24;
+    // Clamp the apex so the highest arcs don't punch through the top of the
+    // chart container (which is `overflow-hidden`). A 5-unit gutter keeps
+    // the curve fully visible inside the viewBox.
+    const apexY = Math.max(COURT.Y_MIN + 5, Math.min(sy, ey) - apexLift);
+    // Cubic bezier with two control points — gives an asymmetric,
+    // gravity-feeling arc instead of a symmetric rainbow.
+    const cp1x = sx * 0.55 + ex * 0.45;
+    const cp1y = apexY - 6;
+    const cp2x = sx * 0.2 + ex * 0.8;
+    const cp2y = apexY + 6;
+
+    // Sample for the traveling ball head.
+    const steps = 48;
+    const points: { x: number; y: number }[] = [];
+    for (let k = 0; k <= steps; k++) {
+      const t = k / steps;
+      const u = 1 - t;
+      const x =
+        u * u * u * sx +
+        3 * u * u * t * cp1x +
+        3 * u * t * t * cp2x +
+        t * t * t * ex;
+      const y =
+        u * u * u * sy +
+        3 * u * u * t * cp1y +
+        3 * u * t * t * cp2y +
+        t * t * t * ey;
+      points.push({ x, y });
+    }
+
+    arcs.push({
+      d: `M ${sx} ${sy} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${ex} ${ey}`,
+      points,
+      delay: i * ARC_INTERVAL,
+    });
+  }
+  return arcs;
+}
 
 /**
  * Reusable shot scatter. NBA-native coordinates throughout — a shot at
@@ -13,15 +156,8 @@ export type ShotDatum = { x: number; y: number; made: 0 | 1; xfg: number };
  *
  *   tilted=false (default): flat top-down, used for "Where they shot" + replay
  *   tilted=true:            CSS rotateX(55deg) — used for the Laboratory map
- *
- * Color mode:
- *   "result"   — green = make, red = miss
- *   "residual" — blue = under-performed (model expected a make), red = tough make
- *   "debug"    — cyan = 3PT zone, magenta = 2PT zone (verifies geometry)
- *
- * Add `?debug=1` to the URL and the mode auto-switches to "debug" — every
- * dot is colored by its geometric class so you can eyeball whether the arc
- * lines up with the shot locations.
+ *   arcs=true:              adds the animated arc-into-hoop overlay
+ *                           (only meaningful when tilted=true)
  */
 export function ShotMap({
   shots,
@@ -30,6 +166,7 @@ export function ShotMap({
   onSelect,
   selectedIndex = null,
   tilted = false,
+  arcs = false,
 }: {
   shots: ShotDatum[];
   mode?: "result" | "residual";
@@ -37,6 +174,7 @@ export function ShotMap({
   onSelect?: (i: number) => void;
   selectedIndex?: number | null;
   tilted?: boolean;
+  arcs?: boolean;
 }) {
   // Debug overlay toggled via ?debug=1
   const [debug, setDebug] = useState(false);
@@ -47,18 +185,21 @@ export function ShotMap({
   }, []);
 
   const effectiveMode: "result" | "residual" | "debug" = debug ? "debug" : mode;
+  const showArcs = tilted && arcs;
+  const arcList = useMemo(() => (showArcs ? buildArcs(shots) : []), [shots, showArcs]);
+  const loopDuration = arcList.length
+    ? ARC_DURATION + (arcList.length - 1) * ARC_INTERVAL + ARC_HOLD
+    : 0;
 
   return (
     <div
       className="relative w-full bg-[#0a0a0a] rounded-xl overflow-hidden ring-1 ring-white/5"
       style={{
-        aspectRatio: tilted ? "16 / 9" : "500 / 470",
+        aspectRatio: tilted ? "5 / 3" : "500 / 470",
         perspective: tilted ? "1500px" : undefined,
       }}
     >
-      {/* 3D stage container — only tilts when `tilted=true`. We use `absolute
-          inset-0` + a transform on this inner div so the SVG aspect stays
-          locked to 500:470 even when rendered into a 16:9 frame. */}
+      {/* 3D stage — the floor. Rotated when tilted. */}
       <div
         className="absolute inset-0"
         style={{
@@ -77,10 +218,8 @@ export function ShotMap({
               <stop offset="0%" stopColor={accent} stopOpacity="0.45" />
               <stop offset="100%" stopColor={accent} stopOpacity="0" />
             </radialGradient>
-            {/* Floor wash for tilted mode — brighter near the hoop, fading
-                toward the back of the court to sell depth. */}
             <radialGradient id="floor-wash" cx="50%" cy="0%" r="80%">
-              <stop offset="0%"  stopColor={accent} stopOpacity={tilted ? "0.18" : "0.10"} />
+              <stop offset="0%" stopColor={accent} stopOpacity={tilted ? "0.18" : "0.10"} />
               <stop offset="80%" stopColor={accent} stopOpacity="0" />
             </radialGradient>
           </defs>
@@ -95,68 +234,164 @@ export function ShotMap({
             />
           )}
 
-          {/* Soft accent glow behind the rim */}
           <circle cx={COURT.HOOP_X} cy={COURT.HOOP_Y} r={28} fill="url(#rim-glow)" />
 
-          <HalfCourt stroke={tilted ? "rgba(255,255,255,0.28)" : "rgba(255,255,255,0.22)"} />
+          {/* Shots are drawn FIRST so the court lines paint on top of them.
+              With ~10k league-wide shots, the paint / FT-circle / 3PT arc
+              were getting completely buried by the dot cloud. Lines on top
+              re-establishes the geometry without making the dots smaller.
 
-          {/* Rim emphasis in accent */}
-          <circle cx={COURT.HOOP_X} cy={COURT.HOOP_Y} r={COURT.RIM_R + 0.5} stroke={accent} strokeOpacity={0.9} strokeWidth={2} fill="none" />
+              For high counts we drop motion.circle (each one runs an
+              entrance + hover transition) and render plain SVG circles —
+              motion machinery at this scale tanks the framerate. */}
+          {shots.length > 600
+            ? shots.map((s, i) => (
+                <circle
+                  key={i}
+                  cx={s.x}
+                  cy={s.y}
+                  r={4}
+                  fill={colorFor(s, effectiveMode)}
+                  opacity={0.7}
+                />
+              ))
+            : shots.map((s, i) => {
+                const isSelected = selectedIndex === i;
+                const fill = colorFor(s, effectiveMode);
+                const r = isSelected ? 9 : 6;
+                const stagger = Math.min(0.6, i * 0.003);
+                return (
+                  <motion.circle
+                    key={i}
+                    cx={s.x}
+                    cy={s.y}
+                    fill={fill}
+                    stroke="#0a0a0a"
+                    strokeWidth={1.4}
+                    opacity={0.85}
+                    initial={{ r: 0, opacity: 0 }}
+                    animate={{ r, opacity: 0.85 }}
+                    transition={{ duration: 0.35, delay: stagger, ease: [0.16, 1, 0.3, 1] }}
+                    whileHover={{ r: 9, opacity: 1 }}
+                    style={{ cursor: onSelect ? "pointer" : "default" }}
+                    onClick={onSelect ? () => onSelect(i) : undefined}
+                  >
+                    <title>
+                      {`${s.made === 1 ? "MAKE" : "MISS"} · ${isThreePointer(s.x, s.y) ? "3PT" : "2PT"} · xFG ${(s.xfg * 100).toFixed(0)}% · ${shotDistFt(s.x, s.y).toFixed(1)}ft`}
+                    </title>
+                  </motion.circle>
+                );
+              })}
 
-          {/* DEBUG overlay — dashed circle at the 3PT arc radius and the
-              corner-3 straight lines, in bright magenta. If the official
-              arc/lines underneath line up with this overlay, the geometry
-              is correct. */}
+          {/* Court lines + rim — drawn LAST so they sit on top of the shot
+              cloud. Slightly higher opacity than before so they punch
+              through even when the cloud underneath is dense. */}
+          <HalfCourt stroke={tilted ? "rgba(255,255,255,0.65)" : "rgba(255,255,255,0.4)"} strokeWidth={2} />
+          <circle
+            cx={COURT.HOOP_X}
+            cy={COURT.HOOP_Y}
+            r={COURT.RIM_R + 0.5}
+            stroke={accent}
+            strokeOpacity={1}
+            strokeWidth={2.5}
+            fill="none"
+          />
+
           {debug && (
             <g stroke="#ff00ff" strokeWidth="1" fill="none" strokeDasharray="4 3" opacity={0.75}>
               <circle cx={0} cy={0} r={COURT.ARC_R} />
               <line x1={-COURT.CORNER_X} y1={COURT.BASELINE_Y} x2={-COURT.CORNER_X} y2={COURT.MIDCOURT_Y} />
-              <line x1={ COURT.CORNER_X} y1={COURT.BASELINE_Y} x2={ COURT.CORNER_X} y2={COURT.MIDCOURT_Y} />
+              <line x1={COURT.CORNER_X} y1={COURT.BASELINE_Y} x2={COURT.CORNER_X} y2={COURT.MIDCOURT_Y} />
             </g>
           )}
-
-          {/* Shots */}
-          {shots.map((s, i) => {
-            const isSelected = selectedIndex === i;
-            const fill = colorFor(s, effectiveMode);
-            const r = isSelected ? 9 : 6;
-            const stagger = Math.min(0.9, i * 0.003);
-            return (
-              <motion.circle
-                key={i}
-                cx={s.x}
-                cy={s.y}
-                fill={fill}
-                stroke="#0a0a0a"
-                strokeWidth={1.4}
-                opacity={0.85}
-                initial={{ r: 0, opacity: 0 }}
-                animate={{ r, opacity: 0.85 }}
-                transition={{ duration: 0.35, delay: stagger, ease: [0.16, 1, 0.3, 1] }}
-                whileHover={{ r: 9, opacity: 1 }}
-                style={{ cursor: onSelect ? "pointer" : "default" }}
-                onClick={onSelect ? () => onSelect(i) : undefined}
-              >
-                <title>
-                  {`${s.made === 1 ? "MAKE" : "MISS"} · ${isThreePointer(s.x, s.y) ? "3PT" : "2PT"} · xFG ${(s.xfg * 100).toFixed(0)}% · ${shotDistFt(s.x, s.y).toFixed(1)}ft`}
-                </title>
-              </motion.circle>
-            );
-          })}
         </svg>
       </div>
 
-      {/* Floor reflection — only when tilted. Mirrors the court, low opacity,
-          fades to transparent. Sits behind the main stage in z-space. */}
-      {tilted && (
+      {/* Animated arcs + 3D hoop — non-rotated overlay so vertical motion isn't
+          foreshortened. Only enabled in Laboratory mode (arcs=true). */}
+      {showArcs && (
         <div
-          aria-hidden
-          className="absolute inset-x-0 bottom-0 h-[40%] pointer-events-none"
-          style={{
-            background:
-              "linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,1) 100%)",
-          }}
-        />
+          className="absolute inset-0 pointer-events-none"
+          style={{ transform: "translateY(8%)" }}
+        >
+          <svg
+            viewBox={`${COURT.X_MIN} ${COURT.Y_MIN} ${COURT.W} ${COURT.H}`}
+            preserveAspectRatio="xMidYMid meet"
+            className="absolute inset-0 w-full h-full overflow-visible"
+          >
+            <defs>
+              <filter id="arc-soft-glow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="1.4" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+
+            {/* Hoop — clean outlined backboard, small red rim, simple net.
+                Matches the reference design rather than the over-styled
+                glass-and-padding variant we had before. */}
+            <g>
+              {/* Backboard outline */}
+              <rect
+                x={-BACKBOARD_HALF_W}
+                y={BACKBOARD_TOP}
+                width={BACKBOARD_HALF_W * 2}
+                height={BACKBOARD_BOT - BACKBOARD_TOP}
+                fill="rgba(255,255,255,0.04)"
+                stroke="rgba(255,255,255,0.65)"
+                strokeWidth={1}
+              />
+              {/* Shooter's square */}
+              <rect
+                x={-12}
+                y={BACKBOARD_BOT - 14}
+                width={24}
+                height={10}
+                fill="none"
+                stroke="rgba(255,255,255,0.55)"
+                strokeWidth={0.8}
+              />
+
+              {/* Rim — single thin red line for the front edge */}
+              <line
+                x1={-RIM_HALF_W}
+                y1={RIM_FRONT_Y}
+                x2={RIM_HALF_W}
+                y2={RIM_FRONT_Y}
+                stroke="#ef4444"
+                strokeWidth={2}
+                strokeLinecap="round"
+              />
+
+              {/* Net — straight vertical-ish spokes hanging from the rim */}
+              {Array.from({ length: 9 }).map((_, k) => {
+                const t = k / 8;
+                const xTop = -RIM_HALF_W + t * RIM_HALF_W * 2;
+                const xBot = -RIM_HALF_W * 0.5 + t * RIM_HALF_W;
+                return (
+                  <line
+                    key={k}
+                    x1={xTop}
+                    y1={RIM_FRONT_Y}
+                    x2={xBot}
+                    y2={RIM_FRONT_Y + NET_DEPTH}
+                    stroke="rgba(255,255,255,0.5)"
+                    strokeWidth={0.5}
+                  />
+                );
+              })}
+            </g>
+
+            {/* Arcs ------------------------------------------------------- */}
+            <g filter="url(#arc-soft-glow)" style={{ mixBlendMode: "screen" }}>
+              {arcList.map((arc, i) => (
+                <ArcStreak key={`arc-${i}`} arc={arc} loopDuration={loopDuration} />
+              ))}
+            </g>
+          </svg>
+        </div>
       )}
 
       {/* Legend / HUD */}
@@ -197,6 +432,104 @@ function colorFor(s: ShotDatum, mode: "result" | "residual" | "debug"): string {
   }
   const residual = s.made - s.xfg;
   return residual >= 0 ? "#f87171" : "#60a5fa";
+}
+
+function ArcStreak({ arc, loopDuration }: { arc: Arc; loopDuration: number }) {
+  // Position the ball head along the path each frame.
+  const [t, setT] = useState(-1);
+  useEffect(() => {
+    let raf = 0;
+    const start = performance.now();
+    const tick = () => {
+      const elapsed = (performance.now() - start) / 1000;
+      const local = (elapsed - arc.delay) % loopDuration;
+      if (local < 0 || local > ARC_DURATION) {
+        setT(-1);
+      } else {
+        setT(local / ARC_DURATION);
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [arc.delay, loopDuration]);
+
+  const headPos =
+    t >= 0
+      ? arc.points[Math.min(arc.points.length - 1, Math.floor(t * (arc.points.length - 1)))]
+      : null;
+
+  return (
+    <g>
+      {/* Soft halo behind the main stroke — exaggerates the arc's presence
+          without requiring a heavier blur filter. */}
+      <motion.path
+        d={arc.d}
+        fill="none"
+        stroke={ARC_GREEN}
+        strokeWidth={12}
+        strokeLinecap="round"
+        opacity={0.25}
+        initial={{ pathLength: 0, opacity: 0 }}
+        animate={{ pathLength: [0, 1, 1, 1], opacity: [0, 0.25, 0.25, 0] }}
+        transition={{
+          duration: loopDuration,
+          times: [
+            0,
+            ARC_DURATION / loopDuration,
+            (ARC_DURATION + ARC_HOLD * 0.6) / loopDuration,
+            1,
+          ],
+          delay: arc.delay,
+          repeat: Infinity,
+          ease: [0.32, 0.72, 0.36, 1],
+        }}
+      />
+      {/* Main arc stroke */}
+      <motion.path
+        d={arc.d}
+        fill="none"
+        stroke={ARC_GREEN}
+        strokeWidth={5}
+        strokeLinecap="round"
+        initial={{ pathLength: 0, opacity: 0 }}
+        animate={{
+          pathLength: [0, 1, 1, 1],
+          opacity: [0, 1, 1, 0],
+        }}
+        transition={{
+          duration: loopDuration,
+          times: [
+            0,
+            ARC_DURATION / loopDuration,
+            (ARC_DURATION + ARC_HOLD * 0.6) / loopDuration,
+            1,
+          ],
+          delay: arc.delay,
+          repeat: Infinity,
+          ease: [0.32, 0.72, 0.36, 1],
+        }}
+      />
+      {headPos && (
+        <>
+          <circle
+            cx={headPos.x}
+            cy={headPos.y}
+            r={6}
+            fill={ARC_GREEN_BRIGHT}
+            opacity={1}
+          />
+          <circle
+            cx={headPos.x}
+            cy={headPos.y}
+            r={12}
+            fill={ARC_GREEN}
+            opacity={0.35}
+          />
+        </>
+      )}
+    </g>
+  );
 }
 
 function Swatch({ color, label }: { color: string; label: string }) {

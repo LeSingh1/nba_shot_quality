@@ -65,7 +65,6 @@ export function PlayerHero({
   }, [allShots]);
 
   const overall = useMemo(() => computeMetrics(allShots), [allShots]);
-  const grade = useMemo(() => gradeFor(overall.xfg), [overall.xfg]);
   const overExpected = (overall.fg - overall.xfg) * 100;
   const splits = useMemo(() => computeSplits(allShots), [allShots]);
 
@@ -142,7 +141,6 @@ export function PlayerHero({
           transition={{ duration: 0.5, delay: 0.3 }}
           className="flex items-center gap-2 rounded-full bg-white/[0.06] border border-white/10 backdrop-blur-md px-4 py-1.5"
         >
-          <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "var(--nike-accent)" }} />
           <span className="text-[10px] uppercase tracking-[0.28em] text-white/75">
             Data scope · 2025-26 NBA Playoffs
           </span>
@@ -171,7 +169,7 @@ export function PlayerHero({
         {/* LEFT RAIL */}
         <div className="relative lg:pl-0 lg:pr-2 px-6">
           <AnimatePresence mode="wait">
-            <RailLeft key={`L-${player.id}`} player={player} metrics={metrics} hasData={hasData} grade={hasData ? grade : null} />
+            <RailLeft key={`L-${player.id}`} player={player} metrics={metrics} hasData={hasData} />
           </AnimatePresence>
         </div>
 
@@ -321,12 +319,11 @@ export function PlayerHero({
 /* ────────────────────────────────────────────────────────────────── rails */
 
 function RailLeft({
-  player, metrics, hasData, grade,
+  player, metrics, hasData,
 }: {
   player: FeaturedPlayer;
-  metrics: { xpps: number; delta: number };
+  metrics: { xpps: number; delta: number; xfg: number };
   hasData: boolean;
-  grade: string | null;
 }) {
   return (
     <motion.aside
@@ -348,15 +345,13 @@ function RailLeft({
     >
       {/* Eyebrow + team badge */}
       <div>
-        <div className="text-[10px] uppercase tracking-[0.3em] text-white/60 flex items-center gap-2 mb-3">
-          <span className="w-1.5 h-1.5 rounded-full" style={{ background: "var(--nike-accent)" }} />
+        <div className="text-[10px] uppercase tracking-[0.3em] text-white/60 mb-3">
           NBA Playoffs · 2025-26
         </div>
         <div
-          className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/15 bg-white/5"
+          className="inline-flex items-center px-3 py-1 rounded-full border border-white/15 bg-white/5"
           style={{ backdropFilter: "blur(4px)" }}
         >
-          <span className="w-2 h-2 rounded-sm" style={{ background: "var(--nike-accent)" }} />
           <span className="text-[11px] uppercase tracking-[0.2em] font-bold text-white">
             Team {player.team}
           </span>
@@ -418,43 +413,30 @@ function RailLeft({
         </div>
       </div>
 
-      {/* Shot selection grade */}
+      {/* Shot quality indicator */}
       <div>
-        <div className="text-[10px] uppercase tracking-[0.28em] text-white/55 mb-3">
-          Shot selection
+        <div className="text-[10px] uppercase tracking-[0.28em] text-white/55 mb-2">
+          Mean xFG%
         </div>
-        <div className="flex items-center gap-4">
-          {grade ? (
-            <div
-              className="w-16 h-16 rounded-full grid place-items-center"
+        {hasData ? (
+          <div className="flex items-baseline gap-2">
+            <span
+              className="font-black tabular-nums"
               style={{
-                background: "color-mix(in srgb, var(--nike-accent) 18%, transparent)",
-                border: "2px solid var(--nike-accent)",
-                boxShadow: "0 0 28px color-mix(in srgb, var(--nike-accent) 40%, transparent)",
+                fontFamily: "var(--font-display)",
+                fontSize: "clamp(28px, 3vw, 44px)",
+                color: "var(--nike-accent)",
               }}
             >
-              <span
-                style={{
-                  fontFamily: "var(--font-display)",
-                  fontSize: 30,
-                  fontWeight: 900,
-                  color: "var(--nike-accent)",
-                }}
-              >
-                {grade}
-              </span>
-            </div>
-          ) : (
-            <div className="w-16 h-16 rounded-full grid place-items-center border border-white/10 bg-white/[0.02]">
-              <span className="text-white/30 text-[11px] uppercase tracking-wider">No data</span>
-            </div>
-          )}
-          <div className="text-[11px] uppercase tracking-[0.18em] text-white/60 leading-snug">
-            Grade from
-            <br />
-            mean xFG%
+              {(metrics.xfg * 100).toFixed(1)}%
+            </span>
+            <span className="text-[10px] uppercase tracking-[0.18em] text-white/45">
+              expected FG
+            </span>
           </div>
-        </div>
+        ) : (
+          <span className="text-white/30 text-sm font-bold uppercase tracking-wider">No data</span>
+        )}
       </div>
     </motion.aside>
   );
@@ -488,24 +470,6 @@ function RailRight({
           "linear-gradient(to left, rgba(10,10,10,0.78) 0%, rgba(10,10,10,0.45) 70%, rgba(10,10,10,0) 100%)",
       }}
     >
-      {/* DROP / city */}
-      <div>
-        <div className="text-[10px] uppercase tracking-[0.36em] text-white/45">Drop</div>
-        <div
-          className="font-black uppercase tracking-tight mt-1"
-          style={{
-            fontFamily: "var(--font-display)",
-            fontSize: "clamp(20px, 2.2vw, 32px)",
-            color: "var(--nike-accent)",
-            textShadow:
-              "0 4px 24px color-mix(in srgb, var(--nike-accent) 40%, transparent)",
-            transition: "color 600ms cubic-bezier(0.16, 1, 0.3, 1)",
-          }}
-        >
-          {player.city}
-        </div>
-      </div>
-
       {/* SHOTS card with sparkline */}
       <div>
         <div className="text-[10px] uppercase tracking-[0.28em] text-white/55">Shots</div>
@@ -694,17 +658,6 @@ function SideArrow({
       </motion.svg>
     </motion.button>
   );
-}
-
-function gradeFor(xfg: number): string {
-  if (xfg >= 0.55) return "A+";
-  if (xfg >= 0.52) return "A";
-  if (xfg >= 0.50) return "A−";
-  if (xfg >= 0.48) return "B+";
-  if (xfg >= 0.45) return "B";
-  if (xfg >= 0.42) return "C+";
-  if (xfg >= 0.39) return "C";
-  return "D";
 }
 
 function computeSplits(shots: { x: number; y: number; made: 0 | 1; xfg: number }[]) {

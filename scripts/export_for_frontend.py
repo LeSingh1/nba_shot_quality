@@ -57,6 +57,24 @@ from nba_shot_quality.model import load_latest  # noqa: E402
 
 logger = logging.getLogger("export_for_frontend")
 
+
+# Full-name → tri-letter abbreviation lookup. Needed because shotchartdetail
+# carries TEAM_NAME (full) and HTM/VTM (abbreviations), and we want the
+# opponent in tri-letter form (matches the way NBA scoreboards label games).
+TEAM_NAME_TO_ABBR: dict[str, str] = {
+    "Atlanta Hawks": "ATL", "Boston Celtics": "BOS", "Brooklyn Nets": "BKN",
+    "Charlotte Hornets": "CHA", "Chicago Bulls": "CHI", "Cleveland Cavaliers": "CLE",
+    "Dallas Mavericks": "DAL", "Denver Nuggets": "DEN", "Detroit Pistons": "DET",
+    "Golden State Warriors": "GSW", "Houston Rockets": "HOU", "Indiana Pacers": "IND",
+    "LA Clippers": "LAC", "Los Angeles Clippers": "LAC", "Los Angeles Lakers": "LAL",
+    "Memphis Grizzlies": "MEM", "Miami Heat": "MIA", "Milwaukee Bucks": "MIL",
+    "Minnesota Timberwolves": "MIN", "New Orleans Pelicans": "NOP",
+    "New York Knicks": "NYK", "Oklahoma City Thunder": "OKC", "Orlando Magic": "ORL",
+    "Philadelphia 76ers": "PHI", "Phoenix Suns": "PHX", "Portland Trail Blazers": "POR",
+    "Sacramento Kings": "SAC", "San Antonio Spurs": "SAS", "Toronto Raptors": "TOR",
+    "Utah Jazz": "UTA", "Washington Wizards": "WAS",
+}
+
 # ---------------------------------------------------------------------------
 # Per-frontend-design-doc constants
 # ---------------------------------------------------------------------------
@@ -177,14 +195,50 @@ def write_shots_json(
                         leftovers.sample(n=min(remaining_budget, len(leftovers)), random_state=42)
                     )
             group = pd.concat(chunks)
+
+        # Sort each player's shots chronologically: by date, then game, then
+        # period, then by time elapsed within the period (minutes/seconds
+        # remaining are DESCENDING with time elapsed).
+        group = group.sort_values(
+            by=["GAME_DATE", "GAME_ID", "PERIOD", "MINUTES_REMAINING", "SECONDS_REMAINING"],
+            ascending=[True, True, True, False, False],
+        )
+        # Pre-compute the player's team abbreviation once per group so we
+        # can derive opponent + home/away from HTM/VTM per shot.
+        team_full = str(group["TEAM_NAME"].iloc[0])
+        team_abbr = TEAM_NAME_TO_ABBR.get(team_full, "")
+
+        def _opp_home(htm: str, vtm: str) -> tuple[str, int]:
+            # If we can't map the team name, fall back to HTM-as-opponent so
+            # something renders rather than a blank.
+            if team_abbr == htm:
+                return vtm, 1
+            if team_abbr == vtm:
+                return htm, 0
+            return htm, 0
+
         out[str(pid_int)] = {
             "name": str(group["PLAYER_NAME"].iloc[0]),
+            "team": team_abbr,
             "shots": [
                 {
                     "x": int(row.LOC_X),
                     "y": int(row.LOC_Y),
                     "made": int(row.SHOT_MADE_FLAG),
                     "xfg": round(float(row.xfg_pred), 4),
+                    "game": str(row.GAME_ID),
+                    "date": str(row.GAME_DATE),
+                    "p": int(row.PERIOD),
+                    "min": int(row.MINUTES_REMAINING),
+                    "sec": int(row.SECONDS_REMAINING),
+                    "opp": _opp_home(str(row.HTM), str(row.VTM))[0],
+                    "home": _opp_home(str(row.HTM), str(row.VTM))[1],
+                    "action": str(row.ACTION_TYPE),
+                    "zone": str(row.SHOT_ZONE_BASIC),
+                    "area": str(row.SHOT_ZONE_AREA),
+                    "range": str(row.SHOT_ZONE_RANGE),
+                    "dist": int(row.SHOT_DISTANCE),
+                    "is3": 1 if str(row.SHOT_TYPE).startswith("3PT") else 0,
                 }
                 for row in group.itertuples()
             ],

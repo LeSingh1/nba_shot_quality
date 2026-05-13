@@ -77,11 +77,15 @@ export function HalfCourt({
       <line x1={-COURT.CORNER_X} y1={COURT.BASELINE_Y} x2={-COURT.CORNER_X} y2={COURT.CORNER_Y_END} />
       <line x1={ COURT.CORNER_X} y1={COURT.BASELINE_Y} x2={ COURT.CORNER_X} y2={COURT.CORNER_Y_END} />
 
-      {/* Three-point arc — 23.75 ft radius from hoop, sweep-flag = 1 bulges
-          away from the baseline (toward midcourt). */}
+      {/* Three-point arc — 23.75 ft radius centered on the hoop. With
+          LARGE=0 SWEEP=0 the renderer picks the minor arc whose circle is
+          centered at the hoop (0,0), bulging AWAY from the baseline. Using
+          SWEEP=1 here was the old bug: it selected the *other* possible
+          radius-237.5 circle (centered at (0,179)) and the arc curved back
+          toward the baseline — that's the "caved-in" 3PT line. */}
       <path
         d={`M ${-COURT.CORNER_X} ${COURT.CORNER_Y_END}
-            A ${COURT.ARC_R} ${COURT.ARC_R} 0 0 1
+            A ${COURT.ARC_R} ${COURT.ARC_R} 0 0 0
             ${COURT.CORNER_X} ${COURT.CORNER_Y_END}`}
       />
 

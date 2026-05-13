@@ -28,15 +28,17 @@ const VB_H = COURT.H + PAD_ABOVE;
 export function TrajectoryReplay({
   shot,
   playerName,
+  tilted = false,
 }: {
   shot: ShotDatum | null;
   playerName: string;
+  tilted?: boolean;
 }) {
   if (!shot) {
     return (
       <div
         className="w-full rounded-xl ring-1 ring-white/5 bg-[#0a0a0a] grid place-items-center text-white/30 text-xs uppercase tracking-[0.18em]"
-        style={{ aspectRatio: `${VB_W} / ${VB_H}` }}
+        style={{ aspectRatio: tilted ? "16 / 9" : `${VB_W} / ${VB_H}` }}
       >
         Pick a shot to watch it fly.
       </div>
@@ -51,12 +53,25 @@ export function TrajectoryReplay({
   const isMake = shot.made === 1;
   const color = isMake ? "#34d399" : "#f87171";
 
-  const midX = (shotX + hoopX) / 2;
-  const midY = (shotY + hoopY) / 2;
+  // For a miss, deflect the endpoint off the rim so the ball visibly
+  // misses the basket. We pick a deterministic offset based on the shot's
+  // x sign + a small rim-clank distance — the trajectory then clips the
+  // edge of the rim instead of dropping cleanly through. Makes use the
+  // exact hoop center as the endpoint, as before.
+  let endX = hoopX;
+  let endY = hoopY;
+  if (!isMake) {
+    const dir = shotX >= 0 ? 1 : -1;
+    endX = hoopX + dir * (COURT.RIM_R + 6);
+    endY = hoopY - 6;
+  }
+
+  const midX = (shotX + endX) / 2;
+  const midY = (shotY + endY) / 2;
   const distance = Math.hypot(shotX - hoopX, shotY - hoopY);
   const peakY = midY - distance * 1.2; // negative direction = upward, lifts the arc
 
-  const path = `M ${shotX} ${shotY} Q ${midX} ${peakY} ${hoopX} ${hoopY}`;
+  const path = `M ${shotX} ${shotY} Q ${midX} ${peakY} ${endX} ${endY}`;
 
   // Identity key — remounts the SVG and replays the animation on every pick.
   const key = `${shot.x}-${shot.y}-${shot.made}-${shot.xfg}`;
@@ -66,8 +81,19 @@ export function TrajectoryReplay({
   return (
     <div
       className="relative w-full rounded-xl ring-1 ring-white/5 overflow-hidden bg-[#0a0a0a]"
-      style={{ aspectRatio: `${VB_W} / ${VB_H}` }}
+      style={{
+        aspectRatio: tilted ? "16 / 9" : `${VB_W} / ${VB_H}`,
+        perspective: tilted ? "1500px" : undefined,
+      }}
     >
+      <div
+        className="absolute inset-0"
+        style={{
+          transform: tilted ? "rotateX(55deg) translateY(6%)" : undefined,
+          transformOrigin: "center center",
+          transformStyle: "preserve-3d",
+        }}
+      >
       <AnimatePresence mode="wait">
         <motion.svg
           key={key}
@@ -93,12 +119,31 @@ export function TrajectoryReplay({
           </defs>
 
           {/* Rim halo */}
-          <circle cx={COURT.HOOP_X} cy={COURT.HOOP_Y} r={38} fill="url(#replay-rim-glow)" />
+          <circle cx={COURT.HOOP_X} cy={COURT.HOOP_Y} r={tilted ? 60 : 38} fill="url(#replay-rim-glow)" />
 
           <HalfCourt stroke="rgba(255,255,255,0.22)" />
 
-          {/* Rim emphasized in shot color */}
-          <circle cx={COURT.HOOP_X} cy={COURT.HOOP_Y} r={COURT.RIM_R + 0.5} stroke={color} strokeWidth="2" fill="none" />
+          {/* Hoop — bright filled rim + pulsing accent ring so the basket is
+              never lost when the court is tilted. */}
+          <motion.circle
+            cx={COURT.HOOP_X}
+            cy={COURT.HOOP_Y}
+            r={COURT.RIM_R + 4}
+            fill="none"
+            stroke={color}
+            strokeWidth={2.2}
+            animate={{ r: [COURT.RIM_R + 4, COURT.RIM_R + 9, COURT.RIM_R + 4], opacity: [0.9, 0.45, 0.9] }}
+            transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <circle
+            cx={COURT.HOOP_X}
+            cy={COURT.HOOP_Y}
+            r={COURT.RIM_R}
+            fill="#ffffff"
+            fillOpacity={0.95}
+            stroke={color}
+            strokeWidth={1.5}
+          />
 
           {/* Shooter origin — expanding pulse */}
           <motion.circle
@@ -146,10 +191,11 @@ export function TrajectoryReplay({
             <animateMotion dur="1.4s" begin="0.2s" fill="freeze" path={path} />
           </motion.circle>
 
-          {/* Rim impact pulse — green ring on make, red flash on miss */}
+          {/* Impact pulse — green at the hoop on a make, red at the off-rim
+              endpoint on a miss (so the visual matches the outcome). */}
           <motion.circle
-            cx={COURT.HOOP_X}
-            cy={COURT.HOOP_Y}
+            cx={endX}
+            cy={endY}
             r={10}
             fill="none"
             stroke={color}
@@ -160,6 +206,7 @@ export function TrajectoryReplay({
           />
         </motion.svg>
       </AnimatePresence>
+      </div>
 
       {/* HUD overlay */}
       <div className="absolute top-4 left-4 right-4 flex items-start justify-between pointer-events-none">
