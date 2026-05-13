@@ -18,6 +18,60 @@ import { TrajectoryReplay } from "../court/TrajectoryReplay";
 
 const SHOTS_PER_GAME = 12;
 
+// 2025-26 NBA Playoffs — first round tips April 18, Finals wrap mid-June.
+// Each player gets a deterministic per-player schedule: their team's seed
+// dictates which of the first 7 days they tip off, and the gap between games
+// alternates 2/3 days (with a 4-5 day break between rounds at games 5 and 9
+// to simulate round transitions).
+const PLAYOFF_TIPOFF = new Date(Date.UTC(2026, 3, 18)); // April 18, 2026
+const MONTH_NAMES = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
+
+function ordinal(n: number): string {
+  const v = n % 100;
+  if (v >= 11 && v <= 13) return `${n}th`;
+  switch (n % 10) {
+    case 1: return `${n}st`;
+    case 2: return `${n}nd`;
+    case 3: return `${n}rd`;
+    default: return `${n}th`;
+  }
+}
+
+// Deterministic 0..1 from any integer — keeps SSR stable.
+function seeded(x: number, salt: number): number {
+  const v = Math.sin(x * 12.9898 + salt * 78.233) * 43758.5453;
+  return Math.abs(v - Math.floor(v));
+}
+
+/**
+ * Build the playoff calendar for a player, deterministic from playerId.
+ *   - Series opener offset 0-6 days into the first week
+ *   - Within-series gap: 2 or 3 days (the home/road back-to-back pattern)
+ *   - Between-round break of 4-5 days after game 4 and game 9
+ */
+function buildSchedule(playerId: number, gameCount: number): Date[] {
+  const startOffset = Math.floor(seeded(playerId, 1) * 7); // 0-6 days
+  const start = new Date(PLAYOFF_TIPOFF);
+  start.setUTCDate(start.getUTCDate() + startOffset);
+
+  const dates: Date[] = [new Date(start)];
+  const cursor = new Date(start);
+  for (let i = 1; i < gameCount; i++) {
+    let gap = seeded(playerId, i + 2) < 0.5 ? 2 : 3;
+    if (i === 4 || i === 9) gap = 4 + Math.round(seeded(playerId, i + 5)); // 4-5 day round break
+    cursor.setUTCDate(cursor.getUTCDate() + gap);
+    dates.push(new Date(cursor));
+  }
+  return dates;
+}
+
+function formatPlayoffDate(d: Date): string {
+  return `${MONTH_NAMES[d.getUTCMonth()]} ${ordinal(d.getUTCDate())}`;
+}
+
 type ShotPoint = { x: number; y: number; made: 0 | 1; xfg: number };
 
 export function EveryShot({
@@ -54,6 +108,12 @@ export function EveryShot({
     return out;
   }, [allShots]);
 
+  // Per-player playoff calendar — same playerId always produces the same dates.
+  const schedule = useMemo(
+    () => buildSchedule(playerId, games.length),
+    [playerId, games.length],
+  );
+
   const currentGame = games[gameIdx];
   const currentShot = shotIdx !== null ? currentGame?.shots[shotIdx] ?? null : null;
 
@@ -63,7 +123,11 @@ export function EveryShot({
         <div className="border-b border-white/10 pb-5 mb-10">
           <div className="text-[11px] uppercase tracking-[0.22em] text-white/40 mb-2 flex items-center gap-3">
             03 · Drill down
-            <Breadcrumb playerName={playerName} gameIdx={currentGame?.idx ?? null} shotIdx={shotIdx} />
+            <Breadcrumb
+              playerName={playerName}
+              gameLabel={currentGame && schedule[currentGame.idx] ? formatPlayoffDate(schedule[currentGame.idx]) : null}
+              shotIdx={shotIdx}
+            />
           </div>
           <h2 className="font-bold leading-tight" style={{ fontFamily: "var(--font-display)", fontSize: "clamp(36px,4.5vw,72px)" }}>
             Every shot, every game.
@@ -96,7 +160,7 @@ export function EveryShot({
             ))}
           </Column>
 
-          <Column title={`Game · ${games.length}`}>
+          <Column title={`Playoff game · ${games.length}`}>
             {games.length === 0 && (
               <div className="text-xs text-white/35 px-3 py-6">Pick a player to see games.</div>
             )}
@@ -110,7 +174,7 @@ export function EveryShot({
                 }}
                 primary="#FF2D6F"
               >
-                <span className="font-medium">Game {String(g.idx + 1).padStart(2, "0")}</span>
+                <span className="font-medium">{schedule[g.idx] ? formatPlayoffDate(schedule[g.idx]) : "—"}</span>
                 <span className="ml-2 flex gap-1.5 items-center text-[10px] uppercase tracking-wider font-mono">
                   <span className="text-white/55">{g.made}/{g.shots.length}</span>
                   <span className="text-white/30">·</span>
@@ -169,15 +233,15 @@ export function EveryShot({
 }
 
 function Breadcrumb({
-  playerName, gameIdx, shotIdx,
-}: { playerName: string; gameIdx: number | null; shotIdx: number | null }) {
+  playerName, gameLabel, shotIdx,
+}: { playerName: string; gameLabel: string | null; shotIdx: number | null }) {
   return (
     <span className="text-white/45 font-mono text-[10px] tracking-normal normal-case">
       {playerName}
-      {gameIdx !== null && (
+      {gameLabel && (
         <>
           {" "}<span className="text-white/25">›</span>{" "}
-          Game {String(gameIdx + 1).padStart(2, "0")}
+          {gameLabel}
         </>
       )}
       {shotIdx !== null && (

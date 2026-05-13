@@ -77,11 +77,13 @@ export function HalfCourt({
       <line x1={-COURT.CORNER_X} y1={COURT.BASELINE_Y} x2={-COURT.CORNER_X} y2={COURT.CORNER_Y_END} />
       <line x1={ COURT.CORNER_X} y1={COURT.BASELINE_Y} x2={ COURT.CORNER_X} y2={COURT.CORNER_Y_END} />
 
-      {/* Three-point arc — 23.75 ft radius from hoop, sweep-flag = 1 bulges
-          away from the baseline (toward midcourt). */}
+      {/* Three-point arc — 23.75 ft radius from hoop. sweep-flag = 0 picks
+          the arc that bulges AWAY from the baseline (toward midcourt). With
+          y growing down in SVG, sweep=0 puts the center (hoop) ABOVE the
+          chord on screen, so the arc bows downward = toward midcourt. */}
       <path
         d={`M ${-COURT.CORNER_X} ${COURT.CORNER_Y_END}
-            A ${COURT.ARC_R} ${COURT.ARC_R} 0 0 1
+            A ${COURT.ARC_R} ${COURT.ARC_R} 0 0 0
             ${COURT.CORNER_X} ${COURT.CORNER_Y_END}`}
       />
 
