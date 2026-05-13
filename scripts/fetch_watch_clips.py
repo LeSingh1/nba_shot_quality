@@ -59,8 +59,8 @@ SSL_CTX.verify_mode = ssl.CERT_NONE
 #   - true round-robin ACROSS games (every series + round represented)
 #   - varied players + zones + action types within each game
 #   - mix of makes and misses
-TARGET_CLIPS = 120
-SHOTS_PER_GAME = 4  # aim for this many clips per playoff game
+TARGET_CLIPS = 300
+SHOTS_PER_GAME = 8  # aim for this many clips per playoff game
 SLEEP_BETWEEN = 0.5  # be polite to stats.nba.com
 MAX_503_BACKOFF = 8  # seconds; doubled on consecutive failures
 
